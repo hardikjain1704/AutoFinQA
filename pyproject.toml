@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]         # PEP 660 editable support ke liye naya setuptools
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AutoFinQA"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+
+[project.scripts]
+auto-finQA = "autofinqa.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["auto_finQA"]
+include = ["autofinqa*"]
