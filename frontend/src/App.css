@@ -1,0 +1,5 @@
+/* Component-level overrides live here if needed. Tailwind handles primary styling. */
+
+#root {
+  min-height: 100vh;
+}
