@@ -1,26 +1,23 @@
+# model_loader.py
+
 import os
 import sys
-import json
 from dotenv import load_dotenv
 from utils.config_loader import load_config
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from logger import GLOBAL_LOGGER as log
-from exception.custom_exception import CustomException
+from exception.custom_exception import AutoFinQAException
 import asyncio
-
 
 class ApiKeyManager:
     def __init__(self):
+        load_dotenv()
         self.api_keys = {
             "GOOGLE_API_KEY": os.getenv("GOOGLE_API_KEY"),
             "GROQ_API_KEY": os.getenv("GROQ_API_KEY"),
-            "ASTRA_DB_API_ENDPOINT": os.getenv("ASTRA_DB_API_ENDPOINT"),
-            "ASTRA_DB_APPLICATION_TOKEN": os.getenv("ASTRA_DB_APPLICATION_TOKEN"),
-            "ASTRA_DB_KEYSPACE": os.getenv("ASTRA_DB_KEYSPACE"),
         }
 
-        # Just log loaded keys (don't print actual values)
         for key, val in self.api_keys.items():
             if val:
                 log.info(f"{key} loaded from environment")
@@ -34,13 +31,10 @@ class ModelLoader:
     """
     Loads embedding models and LLMs based on config and environment.
     """
-
     def __init__(self):
         self.api_key_mgr = ApiKeyManager()
         self.config = load_config()
         log.info("YAML config loaded", config_keys=list(self.config.keys()))
-
-    
 
     def load_embeddings(self):
         """
@@ -50,7 +44,6 @@ class ModelLoader:
             model_name = self.config["embedding_model"]["model_name"]
             log.info("Loading embedding model", model=model_name)
 
-            # Patch: Ensure an event loop exists for gRPC aio
             try:
                 asyncio.get_running_loop()
             except RuntimeError:
@@ -58,19 +51,18 @@ class ModelLoader:
 
             return GoogleGenerativeAIEmbeddings(
                 model=model_name,
-                google_api_key=self.api_key_mgr.get("GOOGLE_API_KEY")  # type: ignore
+                google_api_key=self.api_key_mgr.get("GOOGLE_API_KEY")
             )
         except Exception as e:
             log.error("Error loading embedding model", error=str(e))
-            raise CustomException("Failed to load embedding model", sys)
-
+            raise AutoFinQAException("Failed to load embedding model", sys)
 
     def load_llm(self):
         """
         Load and return the configured LLM model.
         """
         llm_block = self.config["llm"]
-        provider_key = os.getenv("LLM_PROVIDER", "openai")
+        provider_key = os.getenv("LLM_PROVIDER", "google")
 
         if provider_key not in llm_block:
             log.error("LLM provider not found in config", provider=provider_key)
@@ -98,6 +90,13 @@ class ModelLoader:
                 api_key=self.api_key_mgr.get("GROQ_API_KEY"), #type: ignore
                 temperature=temperature,
             )
+
+        # elif provider == "openai":
+        #     return ChatOpenAI(
+        #         model=model_name,
+        #         api_key=self.api_key_mgr.get("OPENAI_API_KEY"),
+        #         temperature=temperature
+        #     )
 
         else:
             log.error("Unsupported LLM provider", provider=provider)
