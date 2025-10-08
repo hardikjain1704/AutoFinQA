@@ -9,8 +9,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-
-# --- Use absolute imports for server compatibility ---
 from workflow.simple_rag_workflow import invoke_chain
 from etl.data_ingestion import DataIngestion
 from logger import GLOBAL_LOGGER as log
