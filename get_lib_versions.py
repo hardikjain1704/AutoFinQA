@@ -1,6 +1,7 @@
 import importlib.metadata
 packages = [
-    
+    "deepeval",
+    "langchain_mongodb"
     ]
 for pkg in packages:
     try:

@@ -1,3 +1,10 @@
+# config.yaml
+
+mongodb:
+  db_name: "autofinqa_db"
+  collection_name: "financial_documents"
+  index_name: "vector_index"
+
 astra_db:
   collection_name: "financedata"
 
@@ -7,6 +14,7 @@ embedding_model:
 
 retriever:
   top_k: 4
+  fetch_k: 20
 
 llm:
   groq:
