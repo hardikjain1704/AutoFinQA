@@ -6,12 +6,21 @@ export const documentService = {
     formData.append('file', file)
 
     try {
-      const response = await api.post('/documents/upload', formData, {
+      const response = await api.post('/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
 
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
+
+  checkHealth: async () => {
+    try {
+      const response = await api.get('/health')
       return response.data
     } catch (error) {
       throw error

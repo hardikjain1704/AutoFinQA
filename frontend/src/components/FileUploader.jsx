@@ -99,18 +99,20 @@ function FileUploader() {
 
     try {
       const response = await documentService.uploadDocument(selectedFile)
-      setSuccessMessage('Upload complete! Redirecting you to the chat...')
+      const successText = response?.message || 'Upload complete! Redirecting you to the chat...'
+      setSuccessMessage(successText)
 
       setTimeout(() => {
         navigate('/chat', {
           state: {
-            uploadedFileName: selectedFile.name,
+            uploadedFileName: response?.filename || selectedFile.name,
             uploadResponse: response
           }
         })
       }, 600)
     } catch (error) {
-      setErrorMessage(error.message || 'Something went wrong while uploading the document.')
+      const detail = error?.response?.data?.detail
+      setErrorMessage(detail || error.message || 'Something went wrong while uploading the document.')
     } finally {
       setIsUploading(false)
     }
