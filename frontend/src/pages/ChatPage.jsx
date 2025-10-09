@@ -59,14 +59,12 @@ function ChatPage() {
     setIsThinking(true)
 
     try {
-      const response = await chatService.sendMessage(content, {
-        source: uploadedFileName || 'manual-query'
-      })
+      const response = await chatService.askQuestion(content)
 
       const assistantMessage = {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
-        content: response?.answer || response?.message || 'I successfully received your question, but the backend did not return an answer yet.',
+        content: response?.answer || 'I successfully received your question, but the backend did not return an answer yet.',
         timestamp: new Date().toISOString()
       }
 
