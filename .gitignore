@@ -12,6 +12,8 @@ wheels/
 .venv
 env
 
+logs/
+
 # Node.js dependencies
 frontend/node_modules/
 frontend/dist/
