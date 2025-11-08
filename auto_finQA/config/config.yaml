@@ -34,3 +34,19 @@ llm:
      provider: "openai"
      model_name: "gpt-4o"
      temperature: 0
+
+
+# Testing and Evaluation Settings
+
+evaluation:
+  numeric_threshold: 0.05  # 5% relative error tolerance
+  exact_match_tolerance: 1e-6
+  metrics:
+    - exact_match
+    - relative_error
+    - threshold_accuracy
+  
+  dataset_paths:
+    dev: "dataset/dev.json"
+    test: "dataset/test.json"
+    train: "dataset/train.json"
