@@ -52,10 +52,15 @@ class RetrievalPipeline:
             fetch_k = retriever_config.get('fetch_k', 20)
             lambda_mult = retriever_config.get('lambda_mult', 0.7)
 
+            # base_retriever = self.vector_store.as_retriever(
+            #     search_type="mmr",
+            #     search_kwargs={'k': top_k, 'fetch_k': fetch_k, 'lambda_mult': lambda_mult}
+            # )
             base_retriever = self.vector_store.as_retriever(
-                search_type="mmr",
-                search_kwargs={'k': top_k, 'fetch_k': fetch_k, 'lambda_mult': lambda_mult}
+                search_type="similarity",
+                search_kwargs={"k": top_k}
             )
+
             log.info(f"Base MMR retriever created with k={top_k}.")
             
             # --- CHANGE: Use a CrossEncoderReranker for better performance and accuracy ---

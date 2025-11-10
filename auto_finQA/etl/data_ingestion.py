@@ -37,7 +37,11 @@ class DocumentLoader:
                 
                 if extension == '.pdf':
                     loader = PyMuPDFLoader(str(file_path))
-                    docs.extend(loader.load())
+                    pages = loader.load()
+
+                    for i, p in enumerate(pages):
+                        p.metadata["source"] = file_path.name
+                        p.metadata["page"] = i
                 elif extension == '.docx':
                     docs.append(DocumentLoader._load_docx(file_path))
                 elif extension in ['.txt', '.md']:
@@ -96,11 +100,38 @@ class DataIngestion:
         except KeyError as e:
             raise AutoFinQAException(f"Missing required key in config.yaml under 'mongodb': {e}", sys)
 
-    def _split_documents(self, docs: List[Document]) -> List[Document]:
+    def _split_documents(self, docs):
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        chunks = splitter.split_documents(docs)
-        log.info(f"Split {len(docs)} documents into {len(chunks)} chunks.")
+        chunks = []
+        for doc in docs:
+            # --- NEW STEP: extract table rows separately ---
+            table_rows = self._split_table_rows(doc)
+            chunks.extend(table_rows)
+
+            # --- OLD STEP: regular text chunks ---
+            text_chunks = splitter.split_documents([doc])
+            chunks.extend(text_chunks)
+
+        log.info(f"Split into {len(chunks)} chunks (including table row chunks).")
         return chunks
+    
+    def _split_table_rows(self, doc: Document) -> List[Document]:
+        rows = []
+        for line in doc.page_content.split("\n"):
+            if "|" in line or "," in line:  # simple heuristic for tables
+                # Remove duplicate whitespace
+                row_text = " ".join(line.split())
+                if len(row_text.split()) >= 3:  # avoid garbage
+                    rows.append(
+                        Document(
+                            page_content=row_text,
+                            metadata={
+                                **doc.metadata,
+                                "chunk_type": "table_row"
+                            }
+                        )
+                    )
+        return rows
     
     def ingest_single_document(self, doc_path_str: str):
         """Loads, splits, and ingests a single document into the vector store."""
