@@ -500,7 +500,7 @@ def evaluate(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate RAG pipeline for numeric answers only.")
-    parser.add_argument("--dataset", type=str, default="dataset/test.json", help="Path to dataset JSON")
+    parser.add_argument("--dataset", type=str, default="auto_finQA/dataset/test.json", help="Path to dataset JSON")
     parser.add_argument("--out", type=str, default="auto_finQA/evaluation/eval_numeric_results.json", help="Output results path")
     parser.add_argument("--use_local_model", action="store_true", help="Prefer local model (ModelLoader)")
     parser.add_argument("--max_calls_per_minute", type=int, default=60, help="Rate limit for LLM calls")

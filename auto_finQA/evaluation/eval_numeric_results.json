@@ -1,0 +1,321 @@
+{
+  "summary": {
+    "dataset": "auto_finQA/dataset/test.json",
+    "samples_requested": 20,
+    "samples_processed": 17,
+    "samples_skipped_non_numeric": 3,
+    "numeric_samples_evaluated": 17,
+    "numeric_mae": 321.8970588235294,
+    "numeric_rmse": 772.794545502764,
+    "numeric_mape": 1592.1027636726164,
+    "numeric_em_avg": 0.0
+  },
+  "results": [
+    {
+      "question": "what is the net change in net revenue during 2015 for entergy corporation?",
+      "gold_answer": "94",
+      "gold_numeric": 94.0,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: net change in net revenue during 2015 for Entergy Corporation. The context says \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty list. Provide JSON with answer \"\", units \"\", sources [], maybe confidence optional. Provide only JSON.'} response_metadata={'token_usage': {'completion_tokens': 106, 'prompt_tokens': 364, 'total_tokens': 470, 'completion_time': 0.222315221, 'prompt_time': 0.016513422, 'queue_time': 0.053747467, 'total_time': 0.238828643, 'completion_tokens_details': {'reasoning_tokens': 75}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_ff6aa7708c', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--ac6f6fb3-9fc6-498b-80ca-ff240a58191f-0' usage_metadata={'input_tokens': 364, 'output_tokens': 106, 'total_tokens': 470}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 107.0,
+        "numeric_rel_error": 1.1382978723404256,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what percentage of total facilities as measured in square feet are leased?",
+      "gold_answer": "14%",
+      "gold_numeric": 14.0,
+      "pred_answer": {},
+      "pred_numeric": 126.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"what percentage of total facilities as measured in square feet are leased?\" The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer to empty string and sources to [].\\n\\nReturn JSON with fields answer, units, sources, confidence optional. Provide empty answer, units empty, sources empty list. Could include confidence maybe but optional. We\\'ll output minimal.\\n\\n'} response_metadata={'token_usage': {'completion_tokens': 126, 'prompt_tokens': 360, 'total_tokens': 486, 'completion_time': 0.262742887, 'prompt_time': 0.01483268, 'queue_time': 0.048164746, 'total_time': 0.277575567, 'completion_tokens_details': {'reasoning_tokens': 95}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_a28df4bce5', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--e8d3829b-f347-4cfd-81a3-41acac866a7f-0' usage_metadata={'input_tokens': 360, 'output_tokens': 126, 'total_tokens': 486}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 112.0,
+        "numeric_rel_error": 8.0,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what is the percentage change in cash flow hedges in 2011 compare to the 2010?",
+      "gold_answer": "9.9%",
+      "gold_numeric": 9.9,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: percentage change in cash flow hedges in 2011 compared to 2010. The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty list. Provide JSON with fields answer, units, sources, confidence optional. We\\'ll set confidence maybe \"0\". But optional. Provide empty answer, units empty, sources [].\\n\\nReturn JSON only.'} response_metadata={'token_usage': {'completion_tokens': 130, 'prompt_tokens': 368, 'total_tokens': 498, 'completion_time': 0.269863311, 'prompt_time': 0.016451441, 'queue_time': 0.053254904, 'total_time': 0.286314752, 'completion_tokens_details': {'reasoning_tokens': 99}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_70d048ba3c', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--68488717-d980-4260-af3d-5cc54fd26334-0' usage_metadata={'input_tokens': 368, 'output_tokens': 130, 'total_tokens': 498}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 191.1,
+        "numeric_rel_error": 19.3030303030303,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what portion of total purchase price is related to stock awards?",
+      "gold_answer": "2.9%",
+      "gold_numeric": 2.9,
+      "pred_answer": {},
+      "pred_numeric": 91.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"what portion of total purchase price is related to stock awards?\" No relevant documents were found. So answer unknown. Must output JSON with answer empty string, units empty, sources empty array. Confidence optional. Provide maybe confidence. But not required. Provide as per schema.'} response_metadata={'token_usage': {'completion_tokens': 91, 'prompt_tokens': 359, 'total_tokens': 450, 'completion_time': 0.189051689, 'prompt_time': 0.016085605, 'queue_time': 0.050764085, 'total_time': 0.205137294, 'completion_tokens_details': {'reasoning_tokens': 60}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_70d048ba3c', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--6b2d888a-914a-46cb-b97c-d7c7dcfdfea2-0' usage_metadata={'input_tokens': 359, 'output_tokens': 91, 'total_tokens': 450}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 88.1,
+        "numeric_rel_error": 30.379310344827584,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what was the percentage change in total rental expense under operating leases from july 2 , 2005 to july 1 , 2006?",
+      "gold_answer": "7%",
+      "gold_numeric": 7.0,
+      "pred_answer": {},
+      "pred_numeric": 2.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: percentage change in total rental expense under operating leases from July 2, 2005 to July 1, 2006. The context says \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty list. Provide JSON with answer \"\", units \"\", sources [], maybe confidence omitted or can include. Provide exactly schema.\\n\\nThus output JSON.'} response_metadata={'token_usage': {'completion_tokens': 125, 'prompt_tokens': 376, 'total_tokens': 501, 'completion_time': 0.260986436, 'prompt_time': 0.017062153, 'queue_time': 0.048820056, 'total_time': 0.278048589, 'completion_tokens_details': {'reasoning_tokens': 94}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_a28df4bce5', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--61c410eb-5d59-41d5-9cd8-a72f37592a36-0' usage_metadata={'input_tokens': 376, 'output_tokens': 125, 'total_tokens': 501}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 5.0,
+        "numeric_rel_error": 0.7142857142857143,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what percent of total recourse debt is current?",
+      "gold_answer": "10%",
+      "gold_numeric": 10.0,
+      "pred_answer": {},
+      "pred_numeric": 84.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"what percent of total recourse debt is current?\" No relevant documents were found. So answer unknown. Must output JSON with answer empty string, units empty, sources empty array. Confidence optional. Probably omit confidence. Provide exactly schema.'} response_metadata={'token_usage': {'completion_tokens': 84, 'prompt_tokens': 357, 'total_tokens': 441, 'completion_time': 0.174924654, 'prompt_time': 0.016078343, 'queue_time': 0.049416106, 'total_time': 0.191002997, 'completion_tokens_details': {'reasoning_tokens': 53}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_fd1fe7f861', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--09629982-c5ab-420e-8640-6344072326f4-0' usage_metadata={'input_tokens': 357, 'output_tokens': 84, 'total_tokens': 441}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 74.0,
+        "numeric_rel_error": 7.4,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what percentage of future minimum rental payments are due in 2018?",
+      "gold_answer": "12%",
+      "gold_numeric": 12.0,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\"answer\":\"\",\"units\":\"\",\"sources\":[]}' additional_kwargs={'reasoning_content': 'We need to answer: \"what percentage of future minimum rental payments are due in 2018?\" The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer to empty string and sources to [].\\n\\nReturn JSON with answer \"\", units \"\", sources [], confidence maybe omitted or can include but optional. Provide exactly schema.\\n\\nThus output: {\"answer\":\"\",\"units\":\"\",\"sources\":[]}. Possibly include confidence field optional; but can omit. Provide only JSON.'} response_metadata={'token_usage': {'completion_tokens': 125, 'prompt_tokens': 361, 'total_tokens': 486, 'completion_time': 0.261491196, 'prompt_time': 0.016317732, 'queue_time': 0.052271683, 'total_time': 0.277808928, 'completion_tokens_details': {'reasoning_tokens': 108}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_fd1fe7f861', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--4e4fa524-12b7-4553-b1f2-abff200b17ab-0' usage_metadata={'input_tokens': 361, 'output_tokens': 125, 'total_tokens': 486}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 189.0,
+        "numeric_rel_error": 15.75,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what was the change in unrecognized tax benefits from the end of 2014 to the end of 2015?",
+      "gold_answer": "-35",
+      "gold_numeric": -35.0,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"what was the change in unrecognized tax benefits from the end of 2014 to the end of 2015?\" The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty list. Provide JSON with fields answer, units, sources, confidence optional. We\\'ll include empty answer, units empty, sources empty, maybe confidence omitted or include. Provide JSON only.'} response_metadata={'token_usage': {'completion_tokens': 135, 'prompt_tokens': 371, 'total_tokens': 506, 'completion_time': 0.278960231, 'prompt_time': 0.016605628, 'queue_time': 0.048466582, 'total_time': 0.295565859, 'completion_tokens_details': {'reasoning_tokens': 104}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_70d048ba3c', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--b6b8337c-938f-4e10-b631-31b976d953c4-0' usage_metadata={'input_tokens': 371, 'output_tokens': 135, 'total_tokens': 506}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 236.0,
+        "numeric_rel_error": 6.742857142857143,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what is the growth rate in the balance of standby letters of credit from 2006 to 2007?",
+      "gold_answer": "-4.4%",
+      "gold_numeric": -4.4,
+      "pred_answer": {},
+      "pred_numeric": 200.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: growth rate in the balance of standby letters of credit from 2006 to 2007. The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty list. Provide JSON with answer \"\", units \"\", sources [], maybe confidence omitted. Provide exactly schema.\\n\\nThus output JSON.'} response_metadata={'token_usage': {'completion_tokens': 116, 'prompt_tokens': 369, 'total_tokens': 485, 'completion_time': 0.241504476, 'prompt_time': 0.0165878, 'queue_time': 0.048408896, 'total_time': 0.258092276, 'completion_tokens_details': {'reasoning_tokens': 85}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_a28df4bce5', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--fbaa5320-8461-4081-af6a-879a765e74d7-0' usage_metadata={'input_tokens': 369, 'output_tokens': 116, 'total_tokens': 485}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 204.4,
+        "numeric_rel_error": 46.45454545454545,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what is the debt-to-asset ratio?",
+      "gold_answer": "22.4%",
+      "gold_numeric": 22.4,
+      "pred_answer": {},
+      "pred_numeric": 128.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": []\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"what is the debt-to-asset ratio?\" The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, we must return JSON with answer empty string, sources empty list. Possibly include confidence? optional. We\\'ll include empty confidence or omit? Schema says confidence optional. We can omit. Provide units empty. So:\\n\\n{\\n \"answer\": \"\",\\n \"units\": \"\",\\n \"sources\": []\\n}\\n\\nThat\\'s it.'} response_metadata={'token_usage': {'completion_tokens': 128, 'prompt_tokens': 356, 'total_tokens': 484, 'completion_time': 0.273947735, 'prompt_time': 0.016269215, 'queue_time': 0.052149375, 'total_time': 0.29021695, 'completion_tokens_details': {'reasoning_tokens': 99}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_ff6aa7708c', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--69137daa-6060-482f-9e54-ea4e21737244-0' usage_metadata={'input_tokens': 356, 'output_tokens': 128, 'total_tokens': 484}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 105.6,
+        "numeric_rel_error": 4.714285714285714,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what portion of the total noncancelable future lease commitments are due in fiscal year of 2019?",
+      "gold_answer": "24.6%",
+      "gold_numeric": 24.6,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"what portion of the total noncancelable future lease commitments are due in fiscal year of 2019?\" The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty list. Provide JSON with fields answer, units, sources, confidence optional. We\\'ll set confidence maybe \"0\". Provide empty units. Provide empty sources list.'} response_metadata={'token_usage': {'completion_tokens': 127, 'prompt_tokens': 368, 'total_tokens': 495, 'completion_time': 0.263106242, 'prompt_time': 0.02019924, 'queue_time': 0.0535191, 'total_time': 0.283305482, 'completion_tokens_details': {'reasoning_tokens': 96}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_70d048ba3c', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--1ee0a3ae-d95b-4880-b264-0e6122066c99-0' usage_metadata={'input_tokens': 368, 'output_tokens': 127, 'total_tokens': 495}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 176.4,
+        "numeric_rel_error": 7.170731707317073,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what was the percentage change in deferred tax assets and regulatory assets from 2013 to 2014",
+      "gold_answer": "1.7%",
+      "gold_numeric": 1.7,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"what was the percentage change in deferred tax assets and regulatory assets from 2013 to 2014\". The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty. Return JSON with answer \"\", units \"\", sources [], maybe confidence omitted.\\n\\nThus output JSON.'} response_metadata={'token_usage': {'completion_tokens': 114, 'prompt_tokens': 368, 'total_tokens': 482, 'completion_time': 0.237361476, 'prompt_time': 0.016856816, 'queue_time': 0.047971964, 'total_time': 0.254218292, 'completion_tokens_details': {'reasoning_tokens': 83}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_a28df4bce5', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--0dff5d84-6751-4dba-b967-9b6e205f25eb-0' usage_metadata={'input_tokens': 368, 'output_tokens': 114, 'total_tokens': 482}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 199.3,
+        "numeric_rel_error": 117.23529411764707,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what was the average net annual change in discounted future net cash flows ( in millions ) for the years 2011 , 2010 , and 2009?",
+      "gold_answer": "3298",
+      "gold_numeric": 3298.0,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\"answer\": \"\", \"units\": \"\", \"sources\": [], \"confidence\": \"\"}' additional_kwargs={'reasoning_content': 'We need to answer: \"what was the average net annual change in discounted future net cash flows ( in millions ) for the years 2011 , 2010 , and 2009?\" The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty list. Provide JSON with answer \"\", units maybe \"million\". But if answer unknown, maybe leave units empty. The schema: answer string, units optional, sources list, confidence optional. We\\'ll set answer \"\", units \"\", sources [].\\n\\nReturn JSON only.'} response_metadata={'token_usage': {'completion_tokens': 153, 'prompt_tokens': 380, 'total_tokens': 533, 'completion_time': 0.320820327, 'prompt_time': 0.017094592, 'queue_time': 0.048369724, 'total_time': 0.337914919, 'completion_tokens_details': {'reasoning_tokens': 127}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_a28df4bce5', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--0b558170-2b1e-47c4-88a6-9fa1afd8fbf6-0' usage_metadata={'input_tokens': 380, 'output_tokens': 153, 'total_tokens': 533}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 3097.0,
+        "numeric_rel_error": 0.9390539721043056,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "assuming each continent has the same number of destinations , approximately how many destinations does each continent have?",
+      "gold_answer": "65",
+      "gold_numeric": 65.0,
+      "pred_answer": {},
+      "pred_numeric": 100.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"assuming each continent has the same number of destinations, approximately how many destinations does each continent have?\" No context provided. The system says \"No relevant documents were found to answer the question.\" So we must output JSON with answer empty, sources empty. Provide confidence maybe optional. We\\'ll set answer \"\" and sources [].\\n\\n'} response_metadata={'token_usage': {'completion_tokens': 100, 'prompt_tokens': 366, 'total_tokens': 466, 'completion_time': 0.210379598, 'prompt_time': 0.018545873, 'queue_time': 0.054017607, 'total_time': 0.228925471, 'completion_tokens_details': {'reasoning_tokens': 69}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_e88ce9c728', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--e0130e40-8d18-477f-939f-de0ef42de0d5-0' usage_metadata={'input_tokens': 366, 'output_tokens': 100, 'total_tokens': 466}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 35.0,
+        "numeric_rel_error": 0.5384615384615384,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "what was the average net revenue between 2016 and 2017 in millions",
+      "gold_answer": "704.25",
+      "gold_numeric": 704.25,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"what was the average net revenue between 2016 and 2017 in millions\". The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty list. Provide JSON with answer \"\", units maybe empty, sources [], confidence optional maybe omitted or can include. Provide only JSON.'} response_metadata={'token_usage': {'completion_tokens': 117, 'prompt_tokens': 364, 'total_tokens': 481, 'completion_time': 0.243023836, 'prompt_time': 0.016341952, 'queue_time': 0.049416828, 'total_time': 0.259365788, 'completion_tokens_details': {'reasoning_tokens': 86}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_fd1fe7f861', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--59fddfeb-093f-42c0-8634-e13939a5e619-0' usage_metadata={'input_tokens': 364, 'output_tokens': 117, 'total_tokens': 481}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 503.25,
+        "numeric_rel_error": 0.7145899893503728,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "the combined amount of accrued interest and penalties related to tax positions taken on our tax returns and included in non-current income taxes payable was what percent of the total ending balance as of november 28 2008?",
+      "gold_answer": "11.0%",
+      "gold_numeric": 11.0,
+      "pred_answer": {},
+      "pred_numeric": 28.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"the combined amount of accrued interest and penalties related to tax positions taken on our tax returns and included in non-current income taxes payable was what percent of the total ending balance as of november 28 2008?\" The context says: \"No relevant documents were found to answer the question.\" So we have no data. Must output JSON with answer empty string, sources empty list.\\n\\nThus:\\n\\n{\\n \"answer\": \"\",\\n \"units\": \"\",\\n \"sources\": [],\\n \"confidence\": \"\"\\n}\\n\\nBut confidence optional. Could omit or set null. Probably leave empty string.\\n\\nReturn only JSON.'} response_metadata={'token_usage': {'completion_tokens': 152, 'prompt_tokens': 389, 'total_tokens': 541, 'completion_time': 0.327493801, 'prompt_time': 0.017304376, 'queue_time': 0.052424044, 'total_time': 0.344798177, 'completion_tokens_details': {'reasoning_tokens': 121}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_fd1fe7f861', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--406001fc-0c2f-408a-b849-0aecb8deff8f-0' usage_metadata={'input_tokens': 389, 'output_tokens': 152, 'total_tokens': 541}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 17.0,
+        "numeric_rel_error": 1.5454545454545454,
+        "numeric_em": 0.0
+      }
+    },
+    {
+      "question": "in 2010 and 2009 , what was the total fair value in billions of assets segregated for the benefit of securities and futures brokerage customers?",
+      "gold_answer": "68.9",
+      "gold_numeric": 68.9,
+      "pred_answer": {},
+      "pred_numeric": 201.0,
+      "raw_response": "content='{\\n  \"answer\": \"\",\\n  \"units\": \"\",\\n  \"sources\": [],\\n  \"confidence\": \"\"\\n}' additional_kwargs={'reasoning_content': 'We need to answer: \"in 2010 and 2009 , what was the total fair value in billions of assets segregated for the benefit of securities and futures brokerage customers?\" The context says: \"No relevant documents were found to answer the question.\" So we have no data. According to instructions, if answer not available, set answer empty string and sources empty. Provide JSON with answer \"\", units maybe empty, sources empty list, confidence optional. We\\'ll include confidence maybe \"0\". But optional. Provide JSON only.'} response_metadata={'token_usage': {'completion_tokens': 137, 'prompt_tokens': 378, 'total_tokens': 515, 'completion_time': 0.285271957, 'prompt_time': 0.016983284, 'queue_time': 0.050813892, 'total_time': 0.302255241, 'completion_tokens_details': {'reasoning_tokens': 106}}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_70d048ba3c', 'service_tier': 'on_demand', 'finish_reason': 'stop', 'logprobs': None} id='run--6f2ad328-076f-404c-af27-7174b421b2df-0' usage_metadata={'input_tokens': 378, 'output_tokens': 137, 'total_tokens': 515}",
+      "retrieval": {
+        "top_k": 5,
+        "retrieved_count": 0,
+        "retrieved_sources": []
+      },
+      "metrics": {
+        "numeric_abs_error": 132.1,
+        "numeric_rel_error": 1.9172714078374453,
+        "numeric_em": 0.0
+      }
+    }
+  ]
+}
