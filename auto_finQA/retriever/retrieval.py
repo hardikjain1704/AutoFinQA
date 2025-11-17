@@ -1,4 +1,4 @@
-# auto_finQA/retrieval.py
+# retrieval.py
 
 import os
 import sys
@@ -7,7 +7,6 @@ from pymongo import MongoClient
 
 from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain.retrievers import ContextualCompressionRetriever
-# from langchain.retrievers.document_compressors import LLMChainFilter
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 from langchain.retrievers.document_compressors import CrossEncoderReranker
 
@@ -58,11 +57,8 @@ class RetrievalPipeline:
             )
             log.info(f"Base MMR retriever created with k={top_k}.")
             
-            # --- CHANGE: Use a CrossEncoderReranker for better performance and accuracy ---
-            # This specialized model is much faster than using a full LLM for filtering.
             cross_encoder_model = HuggingFaceCrossEncoder(model_name="BAAI/bge-reranker-base")
             compressor = CrossEncoderReranker(model=cross_encoder_model, top_n=3)
-            # --- END OF CHANGE ---
             
             compression_retriever = ContextualCompressionRetriever(
                 base_compressor=compressor,
@@ -75,24 +71,15 @@ class RetrievalPipeline:
 
 
 if __name__ == '__main__':
-    """
-    Allows you to run this script directly to test the retrieval pipeline.
-    It will load the retriever, execute a sample query, and print the results.
-    
-    Prerequisite: You must have ingested data first by running data_ingestion.py.
-    """
     try:
         log.info("--- STARTING RETRIEVAL PIPELINE TEST ---")
         retrieval_pipeline = RetrievalPipeline()
         retriever = retrieval_pipeline.get_retriever()
         
-        # --- DEFINE YOUR TEST QUERY HERE ---
-        # This should be a question relevant to the documents you have ingested.
         query = "What was the company's outlook for Q4?"
         
         print(f"\n[INFO] Executing test query: '{query}'")
         
-        # Invoke the retriever to get the compressed, relevant documents
         results = retriever.invoke(query)
         
         print("\n--- RETRIEVED DOCUMENTS ---")
@@ -103,6 +90,11 @@ if __name__ == '__main__':
                 print(f"\n--- Document {i+1} ---")
                 print(f"  Source: {doc.metadata.get('source', 'N/A')}")
                 print(f"  Page: {doc.metadata.get('page', 'N/A')}")
+                # --- ADDED METADATA FOR TABLES ---
+                if 'table_id' in doc.metadata:
+                    print(f"  Table ID: {doc.metadata.get('table_id')}")
+                if 'row_number' in doc.metadata:
+                    print(f"  Row: {doc.metadata.get('row_number')}")
                 print(f"  Content: {doc.page_content}\n")
         
         log.info("--- RETRIEVAL PIPELINE TEST COMPLETED ---")

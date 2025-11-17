@@ -17,22 +17,43 @@ class AutoFinQAException(Exception):
         else:
             norm_msg = str(error_message)
         
-        # Resolve exception info (supports sys module, Exception Object, or current context)
-        exc_type = exc_value = exc_tb = None
+        exc_type, exc_value, exc_tb = None, None, None
+        
         if error_details is None:
+            # Case 1: No error_details, get current exception
             exc_type, exc_value, exc_tb = sys.exc_info()
-        elif hasattr(error_details, "exc_info"):
+            if exc_type is None:
+                # Fallback if sys.exc_info() is empty
+                try:
+                    raise Exception("Fallback exception to capture stack")
+                except Exception:
+                    exc_type, exc_value, exc_tb = sys.exc_info()
+        
+        elif isinstance(error_details, BaseException):
+            # Case 2: error_details is an exception object
+            exc_value = error_details
+            exc_type = type(exc_value)
+            exc_tb = exc_value.__traceback__
+        
+        elif hasattr(error_details, "exc_info") and callable(error_details.exc_info):
+            # Case 3: error_details is sys module
             exc_info_obj = cast(sys, error_details)
             exc_type, exc_value, exc_tb = exc_info_obj.exc_info()
-        elif isinstance(error_details, BaseException):
-            exc_type, exc_value, exc_tb = type(error_details), error_details, error_details.__traceback__
+            
         else:
+            # Case 4: Fallback for other inputs, get current exception
             exc_type, exc_value, exc_tb = sys.exc_info()
-        
+            if exc_type is None:
+                 try:
+                    raise Exception("Fallback exception to capture stack")
+                 except Exception:
+                    exc_type, exc_value, exc_tb = sys.exc_info()
+
         # Walk to the last frame of the report to get the most relevant location
         last_tb = exc_tb
-        while last_tb and last_tb.tb_next:
-            last_tb = last_tb.tb_next
+        if last_tb:
+            while last_tb.tb_next:
+                last_tb = last_tb.tb_next
         
         self.file_name = last_tb.tb_frame.f_code.co_filename if last_tb else '<unknown>'
         self.lineno = last_tb.tb_lineno if last_tb else -1
@@ -40,9 +61,14 @@ class AutoFinQAException(Exception):
 
         # Format the full traceback string
         if exc_type and exc_tb:
+            # Use traceback.format_exception to correctly format
             self.traceback_str = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+        elif isinstance(error_details, BaseException):
+             self.traceback_str = "".join(traceback.format_exception(type(error_details), error_details, error_details.__traceback__))
         else:
-            self.traceback_str = "No traceback available."
+            # Fallback if no traceback is found
+            self.traceback_str = "".join(traceback.format_stack())
+        # --- END OF UPDATE ---
         
         super().__init__(self.__str__())
 
