@@ -18,6 +18,8 @@ python-docx
 pandas
 python-multipart
 pymupdf
+pdfplumber
+openpyxl
 
 sentence-transformers
 torch

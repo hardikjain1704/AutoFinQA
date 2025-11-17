@@ -55,7 +55,7 @@ class ModelLoader:
             )
         except Exception as e:
             log.error("Error loading embedding model", error=str(e))
-            raise AutoFinQAException("Failed to load embedding model", sys)
+            raise AutoFinQAException("Failed to load embedding model", e)
 
     def load_llm(self):
         """
@@ -77,32 +77,35 @@ class ModelLoader:
 
         log.info("Loading LLM", provider=provider, model=model_name)
 
-        if provider == "google":
-            return ChatGoogleGenerativeAI(
-                model=model_name,
-                google_api_key=self.api_key_mgr.get("GOOGLE_API_KEY"),
-                temperature=temperature,
-                max_output_tokens=max_tokens
-            )
+        try:
+            if provider == "google":
+                return ChatGoogleGenerativeAI(
+                    model=model_name,
+                    google_api_key=self.api_key_mgr.get("GOOGLE_API_KEY"),
+                    temperature=temperature,
+                    max_output_tokens=max_tokens
+                )
 
-        elif provider == "groq":
-            return ChatGroq(
-                model=model_name,
-                api_key=self.api_key_mgr.get("GROQ_API_KEY"), #type: ignore
-                temperature=temperature,
-            )
+            elif provider == "groq":
+                return ChatGroq(
+                    model=model_name,
+                    api_key=self.api_key_mgr.get("GROQ_API_KEY"), #type: ignore
+                    temperature=temperature,
+                )
 
-        # elif provider == "openai":
-        #     return ChatOpenAI(
-        #         model=model_name,
-        #         api_key=self.api_key_mgr.get("OPENAI_API_KEY"),
-        #         temperature=temperature
-        #     )
+            # elif provider == "openai":
+            #     return ChatOpenAI(
+            #         model=model_name,
+            #         api_key=self.api_key_mgr.get("OPENAI_API_KEY"),
+            #         temperature=temperature
+            #     )
 
-        else:
-            log.error("Unsupported LLM provider", provider=provider)
-            raise ValueError(f"Unsupported LLM provider: {provider}")
-
+            else:
+                log.error("Unsupported LLM provider", provider=provider)
+                raise ValueError(f"Unsupported LLM provider: {provider}")
+        except Exception as e:
+            log.error(f"Failed to load LLM from provider: {provider}", error=str(e))
+            raise AutoFinQAException(f"Failed to load LLM: {model_name}", e)
 
 if __name__ == "__main__":
     loader = ModelLoader()
