@@ -1,9 +1,13 @@
-# auto_finQA/workflow/simple_rag_workflow.py
+# simple_rag_workflow.py
 
 import sys
+from typing import List, Tuple
+from operator import itemgetter
+
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage, AIMessage
 
 from prompt_library.prompts import PROMPT_REGISTRY, PromptType
 from retriever.retrieval import RetrievalPipeline
@@ -18,6 +22,7 @@ model_loader = ModelLoader()
 def format_docs(docs) -> str:
     """
     Formats retrieved financial documents for the prompt.
+    --- UPDATED: Now includes rich metadata (Table ID, Row Number) ---
     """
     if not docs:
         return "No relevant documents were found to answer the question."
@@ -25,10 +30,23 @@ def format_docs(docs) -> str:
     formatted_chunks = []
     for d in docs:
         meta = d.metadata or {}
-        # Use metadata relevant to financial documents
+        source = meta.get('source', 'N/A')
+        
+        # Build a detailed citation string dynamically
+        citation_parts = [f"Source: {source}"]
+        
+        # Add specific location markers if they exist
+        if 'page_number' in meta:
+            citation_parts.append(f"Page: {meta.get('page_number')}")
+        if 'table_id' in meta:
+            citation_parts.append(f"Table: {meta.get('table_id')}")
+        if 'row_number' in meta:
+            citation_parts.append(f"Row: {meta.get('row_number')}")
+        
+        citation_str = ", ".join(citation_parts)
+        
         formatted = (
-            f"Source: {meta.get('source', 'N/A')}\n"
-            f"Page: {meta.get('page', 'N/A')}\n"
+            f"Citation: [{citation_str}]\n"
             f"Content: {d.page_content.strip()}"
         )
         formatted_chunks.append(formatted)
@@ -38,16 +56,28 @@ def format_docs(docs) -> str:
 def build_chain():
     """
     Builds the RAG pipeline chain once.
-    This is more efficient than rebuilding it on every request.
+    --- UPDATED: Supports Conversational Memory ---
     """
     retriever = retriever_obj.get_retriever()
     llm = model_loader.load_llm()
-    prompt = ChatPromptTemplate.from_template(
-        PROMPT_REGISTRY[PromptType.FINANCIAL_QA].template
-    )
+    
+    # 1. Retrieve the base system prompt
+    system_prompt_text = PROMPT_REGISTRY[PromptType.FINANCIAL_QA].template
+    
+    # 2. Create a ChatPromptTemplate that includes history
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt_text),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("human", "{question}")
+    ])
 
+    # 3. Build the chain using itemgetter for multiple inputs
     chain = (
-        {"context": retriever | format_docs, "question": RunnablePassthrough()}
+        {
+            "context": itemgetter("question") | retriever | format_docs,
+            "question": itemgetter("question"),
+            "chat_history": itemgetter("chat_history")
+        }
         | prompt
         | llm
         | StrOutputParser()
@@ -57,13 +87,27 @@ def build_chain():
 # Build the chain once when the module is loaded.
 rag_chain = build_chain()
 
-def invoke_chain(query: str):
+def invoke_chain(query: str, chat_history: List[Tuple[str, str]]):
     """
-    Runs the pre-built chain with a user query.
+    Runs the pre-built chain with a user query and history.
+    --- UPDATED: Now accepts chat_history to prevent main.py crash ---
     """
     try:
         log.info(f"Invoking simple RAG chain with query: '{query}'")
-        response = rag_chain.invoke(query)
+        
+        # Convert simple tuple history to BaseMessage objects
+        # This is necessary for the MessagesPlaceholder in the prompt
+        history_messages = []
+        for human, ai in chat_history:
+            history_messages.append(HumanMessage(content=human))
+            history_messages.append(AIMessage(content=ai))
+        
+        # Invoke the chain with both inputs
+        response = rag_chain.invoke({
+            "question": query,
+            "chat_history": history_messages
+        })
+        
         return response
     except Exception as e:
         log.error("Error invoking simple RAG chain", exc_info=e)
@@ -77,14 +121,14 @@ if __name__ == '__main__':
     try:
         log.info("--- STARTING SIMPLE RAG WORKFLOW TEST ---")
         
-        # --- DEFINE YOUR TEST QUERY HERE ---
-        # Make sure this question is relevant to a document you have ingested.
-        user_query = "What is 2+14/3?"
+        user_query = "What is the total revenue?"
+        # Mock empty history for testing
+        test_history = []
         
         print(f"\n[INFO] Executing test query: '{user_query}'")
         print("-" * 30)
 
-        response = invoke_chain(user_query)
+        response = invoke_chain(user_query, test_history)
         
         print("-" * 30)
         print("\n--- FINAL ANSWER ---")
