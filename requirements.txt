@@ -11,6 +11,7 @@ streamlit==1.49.1
 uvicorn==0.35.0
 structlog==25.4.0
 langgraph==0.6.7
+langsmith
 deepeval==3.6.4
 pyyaml
 unstructured
