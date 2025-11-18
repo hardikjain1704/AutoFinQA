@@ -21,28 +21,19 @@ from prompt_library.prompts import PROMPT_REGISTRY, PromptType
 from workflow.simple_rag_workflow import format_docs 
 
 
-# Regular expression to match safe arithmetic operations
-# Allows: numbers, +, -, *, /, (, ), ., spaces, and e/E (scientific notation)
+# 1. DEFINE A SAFE CALCULATOR TOOL
 SAFE_MATH_OPS_RE = re.compile(r"^[ \d\.\+\-\*\/\(\)eE]+$")
 
 def safe_calculator(expression: str) -> str:
-    """
-    A secure calculator that evaluates simple arithmetic expressions.
-    Removes commas (e.g. 1,000 -> 1000) before evaluation.
-    """
-    # 1. Clean the input: Remove commas common in financial numbers
+    """A secure calculator that evaluates simple arithmetic expressions."""
     clean_expression = expression.replace(",", "")
-    
     log.info(f"Calculator received expression: {expression} (cleaned: {clean_expression})")
     
-    # 2. Validate characters
     if not SAFE_MATH_OPS_RE.fullmatch(clean_expression):
         log.warning(f"Calculator rejected unsafe expression: {expression}")
         return "Error: Input contains invalid characters. Only numbers and basic operators (+, -, *, /) are allowed."
     
     try:
-        # 3. Safe Evaluation
-        # Use eval() in a restricted scope (no builtins) for extra safety
         result = eval(clean_expression, {"__builtins__": None}, {})
         return str(result)
     except ZeroDivisionError:
@@ -51,7 +42,7 @@ def safe_calculator(expression: str) -> str:
         log.error(f"Calculator failed to evaluate: {clean_expression}", exc_info=e)
         return f"Error: Failed to evaluate expression. {str(e)}"
 
-# LOAD MODELS AND TOOLS
+# 2. LOAD MODELS AND TOOLS
 try:
     log.info("Initializing Agentic Workflow components...")
     model_loader = ModelLoader()
@@ -67,27 +58,20 @@ tools = [
     Tool(
         name="search_financial_documents",
         func=doc_retriever.invoke,
-        description="""
-        Use this tool to find any specific financial fact, figure, text, or date from the company's uploaded documents.
+        description="""Use this tool to find any specific financial fact, figure, text, or date from the company's uploaded documents.
         This is your *only* way to access the documents.
-        
         Critical Rules:
         1. Be Specific: Your input must be a clear, targeted search query.
-        2. Deconstruct Questions: If a user asks for a calculation (e.g., "What is the net profit margin?"), you must first use this tool to find *all* the individual numbers (e.g., 'Net Profit' and 'Total Revenue') *before* you try to calculate anything.
-        
-        Good Query Example: 'What was the total revenue in 2024?'
-        """
+        2. Deconstruct Questions: If a user asks for a calculation, find all individual numbers first."""
     ),
     Tool(
         name="calculator",
         func=safe_calculator,
-        description="""
-        Use this tool for any mathematical calculations.
-        Input must be a simple arithmetic string (e.g., "100 + 200" or "(7797000 - 7268000) / 7268000").
-        """
+        description="Use this tool for any mathematical calculations. Input must be a simple arithmetic string."
     )
 ]
 
+# 3. DEFINE THE AGENT STATE
 class AgentState(TypedDict):
     input: str
     chat_history: List[BaseMessage]
@@ -95,15 +79,39 @@ class AgentState(TypedDict):
     calculation_result: str
     agent_outcome: dict 
     recursion_depth: int
-    
+    grader_status: str
+
 def call_agent(state: AgentState):
     """The main agent node that decides what to do next."""
     log.info(f"Agent Brain called. Recursion depth: {state['recursion_depth']}")
     
+    # GRACEFUL EXIT GUARDRAIL
+    # If we hit the limit (e.g., 5 loops), FORCE an answer instead of crashing.
     if state['recursion_depth'] > 5:
-        log.warning("Agent reached recursion limit. Stopping.")
-        return {"agent_outcome": {"action": "finish", "args": {"answer": "I'm sorry, I'm stuck in a loop. Please try rephrasing your question."}}}
-
+        log.warning("Agent reached recursion limit. Forcing a final answer.")
+        
+        # Create a temporary chain just to summarize whatever we have
+        fallback_chain = (
+            RunnableLambda(lambda x: {
+                "context": format_docs(state.get("retrieved_docs", [])), 
+                "question": state["input"]
+            })
+            | ChatPromptTemplate.from_template(
+                "You are a helpful financial assistant. You have searched for information but reached a time limit.\n"
+                "Based ONLY on the context below, summarize what you found. If the context contains the specific numbers asked for, answer the question.\n\n"
+                "Context:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+            )
+            | llm
+            | StrOutputParser()
+        )
+        
+        try:
+            fallback_answer = fallback_chain.invoke(state)
+        except Exception:
+            fallback_answer = "I'm sorry, I searched multiple times but couldn't verify the exact information. Please try a simpler query."
+            
+        return {"agent_outcome": {"action": "finish", "args": {"answer": fallback_answer}}}
+    
     agent_prompt = ChatPromptTemplate.from_template(PROMPT_REGISTRY[PromptType.FINANCIAL_AGENT].template)
     
     history_str = "\n".join([f"{'Human' if isinstance(m, HumanMessage) else 'AI'}: {m.content}" for m in state['chat_history']])
@@ -135,9 +143,8 @@ def call_agent(state: AgentState):
     
     return {
         "agent_outcome": agent_decision,
-        "recursion_depth": state['recursion_depth'] + 1,
-        "retrieved_docs": [], 
-        "calculation_result": "" 
+        "recursion_depth": state['recursion_depth'] + 1
+        # Note: We do NOT clear retrieved_docs here anymore, so context persists
     }
 
 def call_retriever(state: AgentState):
@@ -148,6 +155,7 @@ def call_retriever(state: AgentState):
         
     log.info(f"Retriever Node: Calling tool with query: {query}")
     docs = doc_retriever.invoke(query)
+    # New docs overwrite old ones
     return {"retrieved_docs": docs}
 
 def call_calculator(state: AgentState):
@@ -162,9 +170,8 @@ def call_calculator(state: AgentState):
 
 def call_grader(state: AgentState):
     """Grades the relevance of retrieved documents."""
-    # Skip grading if no docs were found
     if not state["retrieved_docs"]:
-        return {"retrieved_docs": []}
+        return {"grader_status": "no"}
 
     log.info("Grader Node: Grading retrieved documents.")
     
@@ -177,10 +184,13 @@ def call_grader(state: AgentState):
     })
     
     log.info(f"Grader Node: Decision: '{decision}'")
+    
+    # We do not clear Documents here
+    # We just set a flag. The documents stay in the state.
     if "yes" in decision.lower():
-        return {"retrieved_docs": state["retrieved_docs"]} 
+        return {"grader_status": "yes"} 
     else:
-        return {"retrieved_docs": []} 
+        return {"grader_status": "no"} 
 
 def call_query_rewriter(state: AgentState):
     """Rewrites the query if documents were not relevant."""
@@ -194,14 +204,14 @@ def call_query_rewriter(state: AgentState):
     new_query = chain.invoke({
         "chat_history": history_str,
         "question": state["input"],
-        "context": format_docs(state["retrieved_docs"]) 
+        "context": format_docs(state["retrieved_docs"])
     })
     
     log.info(f"Query Rewriter Node: New query: '{new_query}'")
     return {"agent_outcome": {"action": "search_financial_documents", "args": {"query": new_query}}}
 
 
-# ROUTING LOGIC
+#Routing Logic
 
 def route_agent_decision(state: AgentState) -> Literal["call_retriever", "call_calculator", "finish"]:
     action = state.get("agent_outcome", {}).get("action")
@@ -210,17 +220,23 @@ def route_agent_decision(state: AgentState) -> Literal["call_retriever", "call_c
     elif action == "calculator":
         return "call_calculator"
     else:
-        return "finish" # Default to finish
+        return "finish"
 
 def route_grader_decision(state: AgentState) -> Literal["call_agent", "rewrite_query"]:
-    if state["retrieved_docs"]:
+    # Check the flag we set in call_grader
+    if state.get("grader_status") == "yes":
         log.info("Grader Router: Docs are relevant. Returning to agent brain.")
         return "call_agent"
     else:
+        # Guardrail: If we have looped too many times, just give up and let the agent try to answer
+        # with what it has. This prevents infinite re-writing.
+        if state['recursion_depth'] >= 3:
+             log.info("Grader Router: Recursion limit approaching. Returning to agent despite irrelevant grade.")
+             return "call_agent"
+             
         log.info("Grader Router: Docs are irrelevant. Rewriting query.")
         return "rewrite_query"
 
-# Building the Graph
 log.info("Building agent graph...")
 workflow = StateGraph(AgentState)
 
@@ -259,7 +275,7 @@ log.info("Agent graph compiled successfully.")
 
 def invoke_agent_chain(query: str, session_id: str, chat_history: List[Tuple[str, str]], callbacks=None):
     """
-    Runs the agent chain. Uses session_id for thread isolation.
+    Runs the agent chain with robust error handling and answer extraction.
     """
     try:
         log.info(f"Invoking Agentic RAG chain for session {session_id} with query: '{query}'")
@@ -271,7 +287,8 @@ def invoke_agent_chain(query: str, session_id: str, chat_history: List[Tuple[str
 
         config = {
             "configurable": {"thread_id": session_id}, 
-            "callbacks": callbacks
+            "callbacks": callbacks,
+            "recursion_limit": 50 
         }
 
         initial_state = {
@@ -279,12 +296,43 @@ def invoke_agent_chain(query: str, session_id: str, chat_history: List[Tuple[str
             "chat_history": history_messages,
             "recursion_depth": 0,
             "retrieved_docs": [],
-            "calculation_result": ""
+            "calculation_result": "",
+            "grader_status": "unknown"
         }
         
         final_state = agent_graph.invoke(initial_state, config=config)
         
-        answer = final_state.get("agent_outcome", {}).get("args", {}).get("answer", "I'm sorry, I couldn't find an answer.")
+        # --- DEBUG LOG: See exactly what the agent output ---
+        agent_outcome = final_state.get("agent_outcome", {})
+        log.info(f"FINAL AGENT OUTCOME: {agent_outcome}") 
+        
+        # --- ROBUST EXTRACTION STRATEGY ---
+        answer = None
+        
+        # 1. Check standard path (args -> answer)
+        if isinstance(agent_outcome, dict):
+            args = agent_outcome.get("args", {})
+            if isinstance(args, dict):
+                answer = args.get("answer")
+            elif isinstance(args, str):
+                # Sometimes args is just a string content
+                answer = args
+            
+            # 2. Check flat path (direct 'answer' key)
+            if not answer:
+                answer = agent_outcome.get("answer")
+            
+            # 3. Check 'output' key (common LangChain variation)
+            if not answer:
+                answer = agent_outcome.get("output")
+
+        # 4. Fallback: If the agent finished but we missed the key, dump the whole thing
+        if not answer and agent_outcome:
+            answer = str(agent_outcome)
+
+        # 5. Final Fallback
+        if not answer:
+            answer = "I'm sorry, I processed the request but could not extract a final answer from the agent's state."
         
         log.info("Successfully generated answer with Agentic RAG.")
         return answer
