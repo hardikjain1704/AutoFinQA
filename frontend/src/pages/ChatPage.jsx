@@ -1,49 +1,55 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ChatMessage from '../components/ChatMessage'
 import MessageInput from '../components/MessageInput'
 import { chatService } from '../services/chatService'
+import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 function ChatPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { uploadedFileName, uploadResponse } = location.state || {}
-  const [messages, setMessages] = useState(() => [
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: "Welcome to AutoFinQA. Ask me anything about your financial documents, and I'll break it down for you.",
-      timestamp: new Date().toISOString()
+  const { uploadedFileName, uploadResponse, workflow = 'simple' } = location.state || {}
+
+  // Create or reuse a session id for chat memory
+  const sessionId = useMemo(() => {
+    const key = 'autofinqa_session_id'
+    let sid = localStorage.getItem(key)
+    if (!sid) {
+      sid = `sess-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+      localStorage.setItem(key, sid)
     }
-  ])
+    return sid
+  }, [])
+
+  const initialMessages = useMemo(() => {
+    const base = [
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content:
+          "Welcome to AutoFinQA. Ask me anything about your financial documents, and I'll break it down for you.",
+        timestamp: new Date().toISOString(),
+      },
+    ]
+
+    if (uploadedFileName) {
+      const size = uploadResponse?.size ? `${(uploadResponse.size / (1024 * 1024)).toFixed(2)} MB` : null
+      const summary = `I've ingested “${uploadedFileName}”${size ? ` (${size})` : ''}. What would you like to explore first?`
+      base.push({
+        id: `upload-${Date.now()}`,
+        role: 'assistant',
+        content: summary,
+        timestamp: new Date().toISOString(),
+      })
+    }
+    return base
+  }, [uploadedFileName, uploadResponse])
+
+  const [messages, setMessages] = useState(initialMessages)
   const [isThinking, setIsThinking] = useState(false)
   const [error, setError] = useState('')
 
-  const uploadSummary = useMemo(() => {
-    if (!uploadedFileName) return null
-
-    const size = uploadResponse?.size
-      ? `${(uploadResponse.size / (1024 * 1024)).toFixed(2)} MB`
-      : null
-
-    return `I've ingested “${uploadedFileName}”${size ? ` (${size})` : ''}. What would you like to explore first?`
-  }, [uploadedFileName, uploadResponse])
-
-  useEffect(() => {
-    if (!uploadedFileName) {
-      return
-    }
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `upload-${Date.now()}`,
-        role: 'assistant',
-        content: uploadSummary,
-        timestamp: new Date().toISOString()
-      }
-    ])
-  }, [uploadedFileName, uploadSummary])
+  const workflowBadge = useMemo(() => (workflow === 'agent' ? 'Workflow 2 — Agentic RAG' : 'Workflow 1 — Simple RAG'), [workflow])
 
   const handleSendMessage = async (content) => {
     setError('')
@@ -59,7 +65,7 @@ function ChatPage() {
     setIsThinking(true)
 
     try {
-      const response = await chatService.askQuestion(content)
+      const response = await chatService.askQuestion(content, { workflow, sessionId })
 
       const assistantMessage = {
         id: `assistant-${Date.now()}`,
@@ -88,6 +94,15 @@ function ChatPage() {
     navigate('/', { replace: true })
   }
 
+  const handleBackToWorkflow = () => {
+    navigate('/workflow', {
+      state: {
+        uploadedFileName,
+        uploadResponse,
+      },
+    })
+  }
+
   return (
     <div className="min-h-screen bg-slate-950">
       <div className="relative mx-auto max-w-5xl pt-12 pb-24 px-4 sm:px-6">
@@ -98,14 +113,28 @@ function ChatPage() {
             <p className="mt-3 text-slate-400 max-w-2xl">
               Dive into ratios, segment trends, risk disclosures, or forecasts. I can connect insights back to the document you just uploaded.
             </p>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 text-white px-3 py-1 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              {workflowBadge}
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={handleUploadAnother}
-            className="rounded-full border border-emerald-400/60 bg-emerald-400/10 text-emerald-200 px-4 py-2 text-sm font-medium hover:bg-emerald-400/20 transition"
-          >
-            Upload another file
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleBackToWorkflow}
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 text-white px-4 py-2 text-sm font-medium hover:bg-white/20 transition"
+              title="Back to workflow selection"
+            >
+              <ArrowLeftIcon className="w-4 h-4" /> Back to workflow
+            </button>
+            <button
+              type="button"
+              onClick={handleUploadAnother}
+              className="rounded-full border border-emerald-400/60 bg-emerald-400/10 text-emerald-200 px-4 py-2 text-sm font-medium hover:bg-emerald-400/20 transition"
+            >
+              Upload another file
+            </button>
+          </div>
         </div>
 
         <div className="backdrop-blur-xl bg-slate-900/60 border border-slate-800/60 rounded-3xl shadow-2xl overflow-hidden">

@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import UploadPage from './pages/UploadPage'
 import ChatPage from './pages/ChatPage'
+import WorkflowSelect from './components/WorkflowSelect'
 import './App.css'
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<UploadPage />} />
+        <Route path="/workflow" element={<WorkflowSelect />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
