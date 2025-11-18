@@ -99,11 +99,11 @@ function FileUploader() {
 
     try {
       const response = await documentService.uploadDocument(selectedFile)
-      const successText = response?.message || 'Upload complete! Redirecting you to the chat...'
+      const successText = response?.message || 'Upload complete! Redirecting you to workflow selection...'
       setSuccessMessage(successText)
 
       setTimeout(() => {
-        navigate('/chat', {
+        navigate('/workflow', {
           state: {
             uploadedFileName: response?.filename || selectedFile.name,
             uploadResponse: response
