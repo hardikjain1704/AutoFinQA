@@ -119,37 +119,36 @@ function FileUploader() {
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl shadow-2xl overflow-hidden">
+    <div className="bg-bg-secondary/30 backdrop-blur-sm border border-text-secondary/10 rounded-3xl shadow-2xl overflow-hidden transition-colors duration-300">
       <div className="grid gap-10 md:grid-cols-[1.2fr,0.8fr] p-8 md:p-12">
         <div
-          className={`group relative flex flex-col items-center justify-center text-center border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer ${
-            isDragging
-              ? 'border-emerald-400/90 bg-emerald-500/10 shadow-lg shadow-emerald-900/30'
-              : 'border-white/40 hover:border-emerald-300/80 hover:bg-white/10'
-          }`}
+          className={`group relative flex flex-col items-center justify-center text-center border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer ${isDragging
+            ? 'border-accent-coral/90 bg-accent-coral/10 shadow-lg shadow-accent-coral/30'
+            : 'border-text-secondary/20 hover:border-accent-pink/80 hover:bg-bg-secondary/50'
+            }`}
           onClick={handleBrowseClick}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-bg-secondary/20 via-bg-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
           <div className="relative z-10 flex flex-col items-center space-y-6 px-6 py-12">
-            <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-500/20 text-blue-100 ring-2 ring-blue-300/40">
+            <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent-pink/20 text-accent-pink ring-2 ring-accent-pink/40">
               <ArrowUpTrayIcon className="w-8 h-8" />
             </span>
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-white tracking-tight">Drop your file anywhere</h2>
-              <p className="text-blue-100/90 text-sm md:text-base max-w-md mx-auto">
+              <h2 className="text-2xl font-semibold text-text-primary tracking-tight">Drop your file anywhere</h2>
+              <p className="text-text-secondary text-sm md:text-base max-w-md mx-auto">
                 We support quarterly reports, balance sheets, investor presentations, and more.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-blue-100/80">
+            <div className="flex items-center gap-2 text-sm text-text-secondary/80">
               <DocumentTextIcon className="w-5 h-5" />
               <span>PDF, DOCX, PPTX, TXT · Max 25MB</span>
             </div>
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-full bg-white text-blue-600 font-semibold px-6 py-2 shadow-lg shadow-blue-900/30 hover:shadow-xl hover:shadow-blue-900/40 transition"
+              className="inline-flex items-center justify-center rounded-full bg-bg-primary text-accent-coral font-semibold px-6 py-2 shadow-lg shadow-text-secondary/10 hover:shadow-xl hover:shadow-text-secondary/20 transition border border-text-secondary/10"
             >
               Browse files
             </button>
@@ -163,20 +162,20 @@ function FileUploader() {
           />
         </div>
 
-        <div className="text-white/90 space-y-6">
-          <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
-            <h3 className="text-lg font-semibold mb-4">Analysis we'll unlock</h3>
-            <ul className="space-y-3 text-sm text-blue-100/90">
+        <div className="text-text-primary/90 space-y-6">
+          <div className="bg-bg-secondary/50 border border-text-secondary/10 rounded-2xl p-6">
+            <h3 className="text-lg font-semibold mb-4 text-text-primary">Analysis we'll unlock</h3>
+            <ul className="space-y-3 text-sm text-text-secondary">
               <li className="flex items-start gap-3">
-                <CheckCircleIcon className="w-5 h-5 mt-0.5 text-emerald-300" />
+                <CheckCircleIcon className="w-5 h-5 mt-0.5 text-accent-coral" />
                 Instant summaries and KPI extraction
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircleIcon className="w-5 h-5 mt-0.5 text-emerald-300" />
+                <CheckCircleIcon className="w-5 h-5 mt-0.5 text-accent-coral" />
                 Deep dive insights with follow-up conversations
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircleIcon className="w-5 h-5 mt-0.5 text-emerald-300" />
+                <CheckCircleIcon className="w-5 h-5 mt-0.5 text-accent-coral" />
                 Smart comparisons across uploaded reports
               </li>
             </ul>
@@ -184,10 +183,10 @@ function FileUploader() {
 
           <div className="space-y-4">
             {selectedFile ? (
-              <div className="flex items-center justify-between bg-white/10 border border-white/20 rounded-2xl px-4 py-3 text-sm">
+              <div className="flex items-center justify-between bg-bg-secondary/50 border border-text-secondary/10 rounded-2xl px-4 py-3 text-sm">
                 <div>
-                  <p className="font-semibold text-white tracking-wide">{selectedFile.name}</p>
-                  <p className="text-blue-100/80">
+                  <p className="font-semibold text-text-primary tracking-wide">{selectedFile.name}</p>
+                  <p className="text-text-secondary/80">
                     {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · {selectedFile.type || 'Unknown type'}
                   </p>
                 </div>
@@ -198,26 +197,26 @@ function FileUploader() {
                     setSelectedFile(null)
                     inputRef.current && (inputRef.current.value = '')
                   }}
-                  className="text-sm font-medium text-rose-200 hover:text-rose-100 transition"
+                  className="text-sm font-medium text-accent-pink hover:text-accent-pink/80 transition"
                 >
                   Clear
                 </button>
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-white/30 text-blue-100/70 px-4 py-8 text-center">
+              <div className="rounded-2xl border border-dashed border-text-secondary/30 text-text-secondary/70 px-4 py-8 text-center">
                 <p className="font-medium">No document selected yet</p>
                 <p className="text-sm">Drag and drop your file or tap browse to choose one from your device.</p>
               </div>
             )}
 
             {errorMessage && (
-              <div className="rounded-2xl border border-rose-400/60 bg-rose-500/30 px-4 py-3 text-sm text-white">
+              <div className="rounded-2xl border border-accent-coral/60 bg-accent-coral/20 px-4 py-3 text-sm text-text-primary">
                 {errorMessage}
               </div>
             )}
 
             {successMessage && (
-              <div className="rounded-2xl border border-emerald-400/60 bg-emerald-500/30 px-4 py-3 text-sm text-white">
+              <div className="rounded-2xl border border-accent-pink/60 bg-accent-pink/20 px-4 py-3 text-sm text-text-primary">
                 {successMessage}
               </div>
             )}
@@ -226,7 +225,7 @@ function FileUploader() {
               type="button"
               onClick={handleSubmit}
               disabled={isUploading}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 text-slate-900 font-semibold px-6 py-4 shadow-lg shadow-emerald-900/30 hover:bg-emerald-300 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-accent-coral text-bg-primary font-semibold px-6 py-4 shadow-lg shadow-accent-coral/30 hover:bg-accent-coral/90 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isUploading ? 'Uploading…' : 'Analyze Document'}
             </button>

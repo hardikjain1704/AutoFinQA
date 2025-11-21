@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Light Mode Defaults */
+  --bg-primary: #ffffff;
+  /* Pure white */
+  --bg-secondary: #fafafa;
+  /* Very light gray */
+  --text-primary: #2c2b30;
+  --text-secondary: #6b7280;
+  --accent-pink: #e0a0b0;
+  /* Slightly darker for contrast on white */
+  --accent-coral: #f58f7c;
+  --border-primary: #904030;
+}
+
+.dark {
+  /* Dark Mode (Requested Palette) */
+  --bg-primary: #2c2b30;
+  --bg-secondary: #4f4f51;
+  --text-primary: #d6d6d6;
+  --text-secondary: #a1a1aa;
+  --accent-pink: #f2c4ce;
+  --accent-coral: #f58f7c;
+  --border-primary: #4f4f51;
+}
+
+body {
+  @apply bg-bg-primary text-text-primary transition-colors duration-300;
+}
