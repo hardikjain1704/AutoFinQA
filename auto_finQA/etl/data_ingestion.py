@@ -1,4 +1,4 @@
-# data_ingestion.py
+# etl/data_ingestion.py
 
 import os
 import sys
@@ -59,85 +59,107 @@ class DocumentLoader:
                 raise AutoFinQAException(f"Failed to load document: {file_path}", e)
         return docs
     
-    # PDF loader using pdfplumber (for tables) and PyMuPDF (for text)
     @staticmethod
     def _load_pdf(file_path: Path) -> List[Document]:
+        """
+        Robust PDF Table Extraction with Page Context Injection.
+        """
         docs = []
         file_name = file_path.name
         
-        # 1. Extract tables with pdfplumber
-        log.info(f"Extracting tables from {file_name} with pdfplumber...")
-        table_docs = []
+        log.info(f"Extracting content from {file_name}...")
+        
+        # Settings to handle financial tables with uneven spacing
+        table_settings = {
+            "vertical_strategy": "lines", 
+            "horizontal_strategy": "lines",
+            "snap_tolerance": 4, # Increased tolerance for slightly misaligned financial rows
+        }
+
         try:
             with pdfplumber.open(file_path) as pdf:
                 for page_num, page in enumerate(pdf.pages, 1):
-                    tables = page.extract_tables()
+                    # 1. Extract Page Text (Context)
+                    # This captures headers like "As of March 31, 2024" which sit above tables
+                    page_text = page.extract_text() or ""
+                    
+                    # Determine simple year context from page text to aid disambiguation
+                    year_context = "Unknown"
+                    if "2024" in page_text: year_context = "FY2024"
+                    elif "2023" in page_text: year_context = "FY2023"
+
+                    # 2. Extract Tables
+                    tables = page.extract_tables(table_settings)
+                    # Fallback if lines strategy fails
+                    if not tables:
+                        tables = page.extract_tables()
+
+                    # 3. Process Text Chunks (Add text first so it's searchable)
+                    if page_text:
+                         metadata = {
+                             "source": file_name, 
+                             "page_number": page_num, 
+                             "doc_type": "text",
+                             "year_context_guess": year_context
+                         }
+                         docs.append(Document(page_content=page_text, metadata=metadata))
+
+                    # 4. Process Table Rows
                     for table_id, table in enumerate(tables, 1):
-                        # Convert table to a list of dicts for clean content
-                        if not table: continue
-                        headers = table[0]
+                        if not table or len(table) < 2: continue
+                        
+                        # Identify Headers (First Row)
+                        raw_headers = table[0]
+                        # Clean headers
+                        headers = [str(h).replace('\n', ' ').strip() if h else f"Col_{i}" for i, h in enumerate(raw_headers)]
+                        
+                        # Context String: Helps retrieval connect numbers to column names
+                        header_context = f"Table Columns: {', '.join(headers)}"
+
                         for row_num, row_data in enumerate(table[1:], 1):
-                            row_dict = {headers[i]: cell for i, cell in enumerate(row_data) if i < len(headers)}
-                            content = json.dumps(row_dict)
+                            row_dict = {}
+                            for i, cell in enumerate(row_data):
+                                if i < len(headers):
+                                    val = str(cell).replace('\n', ' ').strip() if cell else "N/A"
+                                    row_dict[headers[i]] = val
+                            
+                            # CONTENT: Headers + Row Data
+                            # This ensures "Consolidated" and "Capital Expenditures" appear in the same chunk
+                            content = f"{header_context} | Row Data: {json.dumps(row_dict, ensure_ascii=False)}"
+                            
                             metadata = {
                                 "source": file_name,
                                 "page_number": page_num,
                                 "doc_type": "tabular",
-                                "table_id": table_id,
-                                "row_number": row_num
+                                "table_id": f"p{page_num}_t{table_id}",
+                                "row_number": row_num,
+                                "year_context_guess": year_context # Helps Agent differentiate 2023 vs 2024 tables
                             }
-                            table_docs.append(Document(page_content=content, metadata=metadata))
-            log.info(f"Extracted {len(table_docs)} table rows from {file_name}.")
-            docs.extend(table_docs)
+                            docs.append(Document(page_content=content, metadata=metadata))
+                            
+            log.info(f"Extracted {len(docs)} total chunks (text + tables) from {file_name}.")
         except Exception as e:
-            log.warning(f"pdfplumber failed to extract tables from {file_name}", error=str(e))
-
-        # 2. Extract text with PyMuPDF (fitz)
-        log.info(f"Extracting text from {file_name} with PyMuPDF...")
-        try:
-            with fitz.open(file_path) as doc:
-                for page_num, page in enumerate(doc, 1):
-                    # We will extract text and *not* table text to avoid duplication
-                    # A simple way is to just extract blocks
-                    text_blocks = page.get_text("blocks", sort=True)
-                    page_text_content = []
-                    
-                    for block in text_blocks:
-                        block_text = block[4] # The text content is at index 4
-                        # Simple heuristic: if a block has many newlines or spaced-out text,
-                        # it might be part of a table pdfplumber missed.
-                        # For now, we'll just check if it's too short to be a paragraph.
-                        if len(block_text.split()) > 5: # Only keep blocks with > 5 words
-                            page_text_content.append(block_text.strip())
-                    
-                    full_page_text = "\n\n".join(page_text_content)
-                    
-                    if full_page_text:
-                        metadata = {
-                            "source": file_name,
-                            "page_number": page_num,
-                            "doc_type": "text"
-                        }
-                        docs.append(Document(page_content=full_page_text, metadata=metadata))
-            log.info(f"Extracted {len(doc)} text pages from {file_name}.")
-        except Exception as e:
-            log.warning(f"PyMuPDF failed to extract text from {file_name}", error=str(e))
+            log.warning(f"Failed to extract content from {file_name}", error=str(e))
             
+        # We also run PyMuPDF separately for raw text extraction if needed, 
+        # but pdfplumber text extraction above covers the context needs.
         return docs
 
     @staticmethod
     def _load_docx(file_path: Path) -> List[Document]:
         doc = DocxDocument(file_path)
         content = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
-        # Also extract tables from docx
         table_docs = []
         for table_id, table in enumerate(doc.tables, 1):
-            for row_num, row in enumerate(table.rows[1:], 1): # Assuming first row is header
+            headers = [cell.text.strip() for cell in table.rows[0].cells]
+            header_context = f"Table Columns: {', '.join(headers)}"
+            
+            for row_num, row in enumerate(table.rows[1:], 1): 
                 try:
-                    headers = [cell.text for cell in table.rows[0].cells]
-                    row_data = [cell.text for cell in row.cells]
+                    row_data = [cell.text.strip() for cell in row.cells]
                     row_dict = {headers[i]: cell for i, cell in enumerate(row_data) if i < len(headers)}
-                    content = json.dumps(row_dict)
+                    content = f"{header_context} | Row Data: {json.dumps(row_dict)}"
+                    
                     metadata = {
                         "source": file_path.name,
                         "doc_type": "tabular",
@@ -146,7 +168,7 @@ class DocumentLoader:
                     }
                     table_docs.append(Document(page_content=content, metadata=metadata))
                 except Exception:
-                    continue # Skip malformed rows
+                    continue 
         
         text_doc = Document(page_content=content, metadata={"source": file_path.name, "doc_type": "text"})
         return [text_doc] + table_docs
@@ -156,14 +178,14 @@ class DocumentLoader:
         content = file_path.read_text(encoding="utf-8")
         return [Document(page_content=content, metadata={"source": file_path.name, "doc_type": "text"})]
 
-    # Load CSV row by row
     @staticmethod
     def _load_csv(file_path: Path) -> List[Document]:
         df = pd.read_csv(file_path)
         docs = []
+        headers = ", ".join(df.columns.tolist())
         for index, row in df.iterrows():
             content_dict = row.to_dict()
-            content_str = json.dumps(content_dict)
+            content_str = f"Table Headers: {headers} | Data: {json.dumps(content_dict)}"
             metadata = {
                 "source": file_path.name,
                 "doc_type": "tabular",
@@ -173,16 +195,15 @@ class DocumentLoader:
         log.info(f"Loaded {len(docs)} rows from CSV: {file_path.name}")
         return docs
         
-    # Load Excel row by row
     @staticmethod
     def _load_excel(file_path: Path) -> List[Document]:
         df = pd.read_excel(file_path)
         docs = []
+        headers = ", ".join(df.columns.tolist())
         for index, row in df.iterrows():
             content_dict = row.to_dict()
-            # Convert numpy types to native Python types for JSON serialization
             content_dict_serializable = {k: (str(v) if pd.isna(v) else v) for k, v in content_dict.items()}
-            content_str = json.dumps(content_dict_serializable, default=str)
+            content_str = f"Table Headers: {headers} | Data: {json.dumps(content_dict_serializable, default=str)}"
             metadata = {
                 "source": file_path.name,
                 "doc_type": "tabular",
@@ -192,7 +213,6 @@ class DocumentLoader:
         log.info(f"Loaded {len(docs)} rows from Excel: {file_path.name}")
         return docs
 
-    # Load JSON object by object (if list)
     @staticmethod
     def _load_json(file_path: Path) -> List[Document]:
         docs = []
@@ -200,18 +220,16 @@ class DocumentLoader:
             data = json.load(f)
         
         if isinstance(data, list):
-            # If it's a list of records, treat each item as a doc
             for i, record in enumerate(data):
                 content_str = json.dumps(record, indent=2)
                 metadata = {
                     "source": file_path.name,
-                    "doc_type": "tabular", # Treat as structured data
+                    "doc_type": "tabular",
                     "row_number": i + 1
                 }
                 docs.append(Document(page_content=content_str, metadata=metadata))
             log.info(f"Loaded {len(docs)} objects from JSON list: {file_path.name}")
         elif isinstance(data, dict):
-            # If it's a single large object, treat as one text doc
             content_str = json.dumps(data, indent=2)
             docs.append(Document(page_content=content_str, metadata={"source": file_path.name, "doc_type": "text"}))
             log.info(f"Loaded 1 object from JSON dict: {file_path.name}")

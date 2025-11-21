@@ -57,9 +57,11 @@ class ModelLoader:
             log.error("Error loading embedding model", error=str(e))
             raise AutoFinQAException("Failed to load embedding model", e)
 
-    def load_llm(self):
+    def load_llm(self, mode: str = "smart"):
         """
         Load and return the configured LLM model.
+        Args:
+            mode (str): "smart" for high-intelligence (70B), "fast" for high-speed/limits (8B).
         """
         llm_block = self.config["llm"]
         # provider_key = os.getenv("LLM_PROVIDER", "google")
@@ -71,12 +73,17 @@ class ModelLoader:
 
         llm_config = llm_block[provider_key]
         provider = llm_config.get("provider")
-        model_name = llm_config.get("model_name")
+        
+        if mode == "fast" and "fast_model_name" in llm_config:
+            model_name = llm_config["fast_model_name"]
+            log.info(f"Loading FAST LLM: {model_name}")
+        else:
+            model_name = llm_config.get("model_name")
+            log.info(f"Loading SMART LLM: {model_name}")
+
         temperature = llm_config.get("temperature", 0.2)
         max_tokens = llm_config.get("max_output_tokens", 2048)
-
-        log.info("Loading LLM", provider=provider, model=model_name)
-
+        
         try:
             if provider == "google":
                 return ChatGoogleGenerativeAI(
@@ -117,7 +124,7 @@ if __name__ == "__main__":
     print(f"Embedding Result: {result}")
 
     # Test LLM
-    llm = loader.load_llm()
+    llm = loader.load_llm(mode="fast")
     print(f"LLM Loaded: {llm}")
     result = llm.invoke("Hello, how are you?")
     print(f"LLM Result: {result.content}")
