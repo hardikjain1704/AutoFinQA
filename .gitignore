@@ -5,6 +5,8 @@ build/
 dist/
 wheels/
 *.egg-info
+*.png
+auto_finQA/workflow/save_agentic_workflow.py
 
 .env
 
