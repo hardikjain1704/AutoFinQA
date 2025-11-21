@@ -40,8 +40,6 @@ def extract_json_from_response(response_text: str) -> dict:
         return json.loads(cleaned_text)
     except json.JSONDecodeError:
         # Fallback: Regex search for the FIRST outer brace pair
-        # This logic intentionally ignores any text or second JSON block after the first one.
-        # This forces sequential execution if the LLM tries to output multiple actions.
         match = re.search(r"\{[\s\S]*?\}", response_text)
         if match:
             try:
@@ -138,8 +136,6 @@ class AgentState(TypedDict):
     chat_history: List[BaseMessage] # Long-term history
     
     # Short-term memory for the current reasoning loop.
-    # This list accumulates tool outputs (like "Calc result: 3") so the agent doesn't forget them.
-    # The 'add' operator ensures new messages are appended, not overwritten.
     scratchpad_messages: Annotated[List[BaseMessage], add]
     
     retrieved_docs: List
@@ -206,7 +202,6 @@ def call_agent(state: AgentState):
     history_str = "\n".join([f"{'Human' if isinstance(m, HumanMessage) else ('AI' if isinstance(m, AIMessage) else 'System')}: {m.content}" for m in state['chat_history']])
     
     # Format Scratchpad
-    # Combine Retrieved Docs + Calculation Results into one context block
     scratchpad_content = ""
     if state['retrieved_docs']:
         scratchpad_content += f"\n[Observation] Retrieved Documents:\n{format_docs(state['retrieved_docs'])}"
@@ -262,8 +257,6 @@ def call_table_tool(state: AgentState):
     content = retriever_obj.fetch_table_by_id(table_id)
     from langchain_core.documents import Document
     
-    # We return a new doc list. Graph ensures this replaces the old list or we can append logic here.
-    # For simplicity, we just pass it.
     doc = Document(page_content=content, metadata={"source": "Database", "table_id": table_id})
     current_docs = state.get("retrieved_docs", [])
     return {"retrieved_docs": current_docs + [doc]}
@@ -281,7 +274,6 @@ def call_calculator(state: AgentState):
         content=f"Calculation result for '{expression}': {result}"
     )
     
-    # Return to graph - 'add' reducer will append this to the list
     return {"scratchpad_messages": [result_msg]}
 
 def call_grader(state: AgentState):
@@ -293,8 +285,14 @@ def call_grader(state: AgentState):
     grader_prompt = ChatPromptTemplate.from_template(PROMPT_REGISTRY[PromptType.RELEVANCE_GRADER].template)
     chain = grader_prompt | llm_fast | StrOutputParser()
     
+    # --- CRITICAL FIX START ---
+    # Changed slice from [-3:] to [:5]
+    # This ensures we grade the TOP 5 most relevant documents, not the bottom 3.
+    docs_to_grade = state["retrieved_docs"][:5]
+    # --- CRITICAL FIX END ---
+    
     decision = chain.invoke({
-        "context": format_docs(state["retrieved_docs"][-3:]), 
+        "context": format_docs(docs_to_grade), 
         "question": state["input"]
     })
     log.info(f"Grader Node: Decision: '{decision}'")
@@ -422,7 +420,7 @@ def invoke_agent_chain(query: str, session_id: str, chat_history: List[Tuple[str
             "recursion_depth": 0,
             "grader_loop_count": 0,
             "retrieved_docs": [],
-            "scratchpad_messages": [], # Start with empty scratchpad
+            "scratchpad_messages": [], 
         }
         
         final_state = agent_graph.invoke(initial_state, config=config)

@@ -33,14 +33,19 @@ class PromptTemplate:
 PROMPT_REGISTRY: Dict[PromptType, PromptTemplate] = {
     
     PromptType.FINANCIAL_QA: PromptTemplate(
-        """You are a highly skilled financial analyst AI. Your task is to provide accurate, data-driven answers based ONLY on the provided financial document context and the chat history.
+        """You are a precise financial analyst. 
+        
+**CONTEXT FORMAT:**
+The documents are formatted as: "Metric: [Name]. Values: [Column Name] was [Value]; [Column Name] was [Value]..."
 
-**CRITICAL INSTRUCTIONS:**
-1. **Chat History:** You must use the chat history to resolve pronouns or references. 
-   - If the user says "add these two", look at the previous AI response to find the numbers they are referring to.
-   - If the user says "compare it with 2023", "it" refers to the metric discussed previously.
-2. **Strict Context:** Do not make up information. If the answer is not in the context, state that clearly.
-3. **Citations:** When you provide numerical answers, cite the source document metadata (Source, Page, Table, Row) if available.
+**YOUR TASK:**
+1. Find the "Metric" that matches the user's question (e.g., "Total Production").
+2. Inside that metric's values, find the specific **Time Period** requested (e.g., "Q1-2025").
+3. Return **ONLY** the value associated with that specific time period.
+
+**CRITICAL RULES:**
+- If the user asks for Q1 2025, DO NOT give the value for Q4 2024, even if it's next to it.
+- If the exact answer is not found, say "I could not find the data for that specific period."
 
 Context from financial documents:
 {context}
@@ -51,42 +56,40 @@ Chat History:
 User Question: {question}
 
 Answer:""",
-        description="The main prompt for answering financial questions based on context, with explicit instructions to resolve references from history."
+        description="Strict QA prompt for structured metric data."
     ),
 
     PromptType.RELEVANCE_GRADER: PromptTemplate(
-        """You are a grader assessing the relevance of a retrieved document to a user's question.
-        
-CRITICAL RULE: If the document contains **keywords**, **numbers**, **table rows**, or **financial figures** that match the user's query, you MUST grade it as 'yes'.
+        """You are a relevance grader.
 
-Do NOT look for complete sentences. Financial documents are often just rows of data.
-If the user asks for "Revenue" and the document says "Revenue ... 1000", that is RELEVANT.
+**CONTEXT FORMAT:**
+"Metric: [Name]. Values: Q1-2025 was 100; Q4-2024 was 90..."
 
-Respond with a single word: 'yes' or 'no'.
+**CRITERIA:**
+1. Does the "Metric" name match the User's subject? (e.g. User: "Production", Doc: "Total Production" -> YES)
+2. Does the "Values" string contain the Time Period the user wants? (e.g. User: "Q1 2025", Doc values contain "Q1-2025" -> YES)
+
+If BOTH are true, respond 'yes'. Otherwise, respond 'no'.
 
 Retrieved context:
 {context}
 
-User question: {question}""",
-        description="A prompt to grade if the retrieved context is relevant to the question."
+User Question: {question}""",
+        description="Grader tuned for Metric/Value strings."
     ),
 
     PromptType.QUERY_REWRITER: PromptTemplate(
-        """You are a query rewriting expert. Your task is to rewrite a user's question to improve retrieval.
-
-CRITICAL RULE: PRESERVE EXACT ENTITY NAMES. 
-If the user asks about a specific acronym (e.g., "BIRAC"), account name (e.g., "Fund(Manpower) A/c"), or code, **DO NOT** change or expand it. Keep the exact string.
-
-**Resolving References:**
-If the user query relies on previous context (e.g., "What is the total for that year?"), use the Chat History to make the query standalone (e.g., "What is the total revenue for FY2024?").
-
-Chat History:
-{chat_history}
-
-Original (or last) query: {question}
-
-Rewritten Query:""",
-        description="A prompt to rewrite a user's question for better retrieval, ensuring pronouns are resolved."
+        """You are a query rewriter. Rewrite the user's question to match financial report headers.
+        
+        Example:
+        User: "production numbers last quarter"
+        Rewrite: "Total production Q2-2025"
+        
+        User: "{question}"
+        Chat History: {chat_history}
+        
+        Rewritten Query:""",
+        description="Simple rewriter"
     ),
 
     PromptType.INTENT_ROUTER: PromptTemplate(
