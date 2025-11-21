@@ -104,17 +104,17 @@ function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-bg-primary transition-colors duration-300">
       <div className="relative mx-auto max-w-5xl pt-12 pb-24 px-4 sm:px-6">
         <div className="flex justify-between items-start gap-4 mb-8">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-emerald-300/80">AutoFinQA Chat</p>
-            <h1 className="mt-2 text-3xl md:text-4xl font-semibold text-white">Ask questions about your financial data</h1>
-            <p className="mt-3 text-slate-400 max-w-2xl">
+            <p className="text-sm uppercase tracking-[0.3em] text-accent-coral/80">AutoFinQA Chat</p>
+            <h1 className="mt-2 text-3xl md:text-4xl font-semibold text-text-primary">Ask questions about your financial data</h1>
+            <p className="mt-3 text-text-secondary max-w-2xl">
               Dive into ratios, segment trends, risk disclosures, or forecasts. I can connect insights back to the document you just uploaded.
             </p>
-            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 text-white px-3 py-1 text-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-text-secondary/20 bg-bg-secondary text-text-primary px-3 py-1 text-xs">
+              <span className="w-2 h-2 rounded-full bg-accent-coral" />
               {workflowBadge}
             </div>
           </div>
@@ -122,7 +122,7 @@ function ChatPage() {
             <button
               type="button"
               onClick={handleBackToWorkflow}
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 text-white px-4 py-2 text-sm font-medium hover:bg-white/20 transition"
+              className="inline-flex items-center gap-2 rounded-full border border-text-secondary/20 bg-bg-secondary text-text-primary px-4 py-2 text-sm font-medium hover:bg-bg-secondary/80 transition"
               title="Back to workflow selection"
             >
               <ArrowLeftIcon className="w-4 h-4" /> Back to workflow
@@ -130,24 +130,24 @@ function ChatPage() {
             <button
               type="button"
               onClick={handleUploadAnother}
-              className="rounded-full border border-emerald-400/60 bg-emerald-400/10 text-emerald-200 px-4 py-2 text-sm font-medium hover:bg-emerald-400/20 transition"
+              className="rounded-full border border-border-primary bg-accent-coral/10 text-accent-coral px-4 py-2 text-sm font-medium hover:bg-accent-coral/20 transition"
             >
               Upload another file
             </button>
           </div>
         </div>
 
-        <div className="backdrop-blur-xl bg-slate-900/60 border border-slate-800/60 rounded-3xl shadow-2xl overflow-hidden">
+        <div className="border-2 border-border-primary dark:border-text-secondary/40 rounded-3xl overflow-hidden bg-white dark:bg-transparent">
           <div className="max-h-[60vh] overflow-y-auto px-6 pt-8 pb-4 space-y-6">
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
             {isThinking && (
               <div className="flex justify-start">
-                <div className="flex items-center gap-1 bg-white/10 border border-white/10 rounded-full px-4 py-2 text-[13px] text-slate-200">
-                  <span className="w-2 h-2 rounded-full bg-emerald-300 animate-bounce" />
-                  <span className="w-2 h-2 rounded-full bg-emerald-300 animate-bounce [animation-delay:120ms]" />
-                  <span className="w-2 h-2 rounded-full bg-emerald-300 animate-bounce [animation-delay:240ms]" />
+                <div className="flex items-center gap-1 px-4 py-2 text-[13px] text-text-secondary">
+                  <span className="w-2 h-2 rounded-full bg-accent-pink animate-bounce" />
+                  <span className="w-2 h-2 rounded-full bg-accent-pink animate-bounce [animation-delay:120ms]" />
+                  <span className="w-2 h-2 rounded-full bg-accent-pink animate-bounce [animation-delay:240ms]" />
                   <span className="ml-3">Analyzing…</span>
                 </div>
               </div>
@@ -156,7 +156,7 @@ function ChatPage() {
 
           {error && (
             <div className="px-6">
-              <div className="mb-4 rounded-2xl border border-rose-400/60 bg-rose-500/20 px-4 py-3 text-sm text-rose-100">
+              <div className="mb-4 rounded-2xl border border-accent-coral/60 bg-accent-coral/20 px-4 py-3 text-sm text-text-primary">
                 {error}
               </div>
             </div>
