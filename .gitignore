@@ -7,6 +7,9 @@ wheels/
 *.egg-info
 *.png
 auto_finQA/workflow/save_agentic_workflow.py
+auto_finQA/evaluation/eval.py
+auto_finQA/evaluation/eval_generation.py
+analysis_results.py
 
 .env
 
