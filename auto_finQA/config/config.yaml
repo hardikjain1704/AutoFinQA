@@ -13,14 +13,20 @@ embedding_model:
   model_name: "models/text-embedding-004"
 
 retriever:
-  top_k: 5
-  fetch_k: 20
+  top_k: 15
+  fetch_k: 50
+  lambda_mult: 0.5
 
 llm:
   groq:
     provider: "groq"
-    # model_name: "openai/gpt-oss-120b"
+    # Primary "Smart" Model (Agent & Final Answer)
     model_name: "llama-3.3-70b-versatile"
+    
+    # Secondary "Fast" Model (Router, Grader, Rewriter)
+    # This model has much higher rate limits
+    fast_model_name: "llama-3.1-8b-instant" 
+    
     temperature: 0
     max_output_tokens: 2048
 
@@ -35,11 +41,9 @@ llm:
      model_name: "gpt-4o"
      temperature: 0
 
-
 # Testing and Evaluation Settings
-
 evaluation:
-  numeric_threshold: 0.05  # 5% relative error tolerance
+  numeric_threshold: 0.05
   exact_match_tolerance: 1e-6
   metrics:
     - exact_match
