@@ -32,7 +32,7 @@ function MessageInput({ onSend, disabled }) {
             onChange={(event) => setMessage(event.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask about revenue trends, margins, risks..."
-            className="w-full resize-none rounded-2xl bg-bg-primary/60 border border-text-secondary/20 text-text-primary placeholder:text-text-secondary/60 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-coral focus:border-transparent"
+            className="w-full resize-none rounded-2xl bg-gray-100 dark:bg-bg-secondary border border-border-primary text-text-primary placeholder:text-text-secondary/60 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-coral focus:border-transparent"
             disabled={disabled}
           />
         </div>

@@ -5,9 +5,9 @@ function ChatMessage({ message }) {
   return (
     <div className={`flex ${isBot ? 'justify-start' : 'justify-end'}`}>
       <div
-        className={`max-w-xl px-5 py-3 transition ${isBot
-            ? 'text-text-primary'
-            : 'text-accent-coral'
+        className={`max-w-xl px-5 py-3 rounded-2xl border border-border-primary transition ${isBot
+          ? 'text-text-primary'
+          : 'text-accent-coral'
           }`}
       >
         <p className="whitespace-pre-line text-sm md:text-base leading-relaxed">{content}</p>

@@ -17,14 +17,19 @@
 }
 
 .dark {
-  /* Dark Mode (Requested Palette) */
-  --bg-primary: #2c2b30;
-  --bg-secondary: #4f4f51;
-  --text-primary: #d6d6d6;
+  /* Dark Mode (Modern Zinc Palette) */
+  --bg-primary: #18181b;
+  /* Deep Zinc 900 */
+  --bg-secondary: #27272a;
+  /* Zinc 800 */
+  --text-primary: #f4f4f5;
+  /* Zinc 100 */
   --text-secondary: #a1a1aa;
+  /* Zinc 400 */
   --accent-pink: #f2c4ce;
   --accent-coral: #f58f7c;
-  --border-primary: #4f4f51;
+  --border-primary: #3f3f46;
+  /* Zinc 700 */
 }
 
 body {
