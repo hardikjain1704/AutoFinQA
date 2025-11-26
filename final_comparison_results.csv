@@ -1,0 +1,68 @@
+id,query,expected,simple_ans,agent_ans,simple_acc,agent_acc,agent_faithfulness,agent_relevancy,agent_context_precision,simple_faithfulness,simple_relevancy,simple_context_precision
+1,What is the difference in Operating Expenses between Q2-2024 and Q2-2025?,-18 million,"Metric: Operating expenses. 
+Values: Q2-2024 was 2,973; Q2-2025 was 2,955.
+The difference in Operating Expenses between Q2-2024 and Q2-2025 is 18.",The difference in Operating Expenses between Q2-2024 and Q2-2025 is -18 million dollars.,0,1,1.0,1.0,1.0,0.6666666666666666,1.0,1.0
+2,How many Supercharger stations were added between Q2-2024 and Q2-2025?,904,"Metric: Supercharger stations. Values: Q2-2024 was 6,473; Q2-2025 was 7,377. 
+
+To find the number of Supercharger stations added, subtract the value for Q2-2024 from the value for Q2-2025: 7,377 - 6,473 = 904.
+
+So, 904 Supercharger stations were added between Q2-2024 and Q2-2025.",904,1,1,1.0,1.0,1.0,1.0,0.8,1.0
+3,What represents the largest component of Total revenues in Q2-2025?,Total automotive revenues,"Metric: Total revenues. Values: Q2-2024 was 25,500; Q3-2024 was 25,182; Q4-2024 was 25,707; Q1-2025 was 19,335; Q2-2025 was 22,496.
+
+To determine the largest component of Total revenues in Q2-2025, we need to examine the components of Total revenues. 
+
+The components of Total revenues are: 
+- Total automotive revenues 
+- Energy generation and storage revenue 
+- Services and other revenue
+
+Metric: Total automotive revenues. Values: Q2-2024 was 19,878; Q3-2024 was 20,016; Q4-2024 was 19,798; Q1-2025 was 13,967; Q2-2025 was 16,661.
+
+Metric: Energy generation and storage revenue. Values: Q2-2024 was 3,014; Q3-2024 was 2,376; Q4-2024 was 3,061; Q1-2025 was 2,730; Q2-2025 was 2,789.
+
+Metric: Services and other revenue. Values: Q2-2024 was 2,608; Q3-2024 was 2,790; Q4-2024 was 2,848; Q1-2025 was 2,638; Q2-2025 was 3,046.
+
+Comparing the values for Q2-2025, Total automotive revenues was 16,661, Energy generation and storage revenue was 2,789, and Services and other revenue was 3,046.
+
+The largest component of Total revenues in Q2-2025 is Total automotive revenues, with a value of 16,661.","Total automotive revenues is the largest component of Total revenues in Q2-2025, with a value of $16,661 million.",1,1,1.0,1.0,1.0,0.8636363636363636,0.25,1.0
+4,Sum the Net income attributable to common stockholders (GAAP) for Q1-2025 and Q2-2025.,"1,581","Metric: Net income attributable to common stockholders (GAAP). 
+Values: Q1-2025 was 409; Q2-2025 was 1,172. 
+The sum of these values is 409 + 1,172 = 1,581.",The sum of Net income attributable to common stockholders (GAAP) for Q1-2025 and Q2-2025 is 1581.,1,1,1.0,1.0,1.0,0.75,1.0,1.0
+5,What is the current installed annual vehicle capacity for Model Y in Berlin?,">375,000","Metric: Current Installed Annual Vehicle Capacity. Values: Model was Model Y; Region was Berlin; Capacity was >375,000. 
+
+The answer is >375,000.","The current installed annual vehicle capacity for Model Y in Berlin is greater than 375,000.",1,1,1.0,1.0,1.0,1.0,1.0,1.0
+6,Did the Average Selling Price (ASP) of vehicles increase or decrease YoY in Q2-2025?,Decrease,"Metric: Average Selling Price (ASP). Values: Q2-2024 was not provided; Q2-2025 was not provided. However, according to the context, the ASP (excl. FX impact) decreased due to mix. The exact YoY percentage change in Q2-2025 is not provided.",The information is insufficient to determine if the Average Selling Price (ASP) of vehicles increased or decreased year-over-year in Q2-2025.,1,1,1.0,1.0,1.0,1.0,0.6,1.0
+7,How many Model 3/Y vehicles were delivered in Q2-2025?,"373,728","Metric: Model 3/Y deliveries. Values: Q2-2024 was 422,405; Q3-2024 was 439,975; Q4-2024 was 471,930; Q1-2025 was 323,800; Q2-2025 was 373,728. 
+
+The answer is 373,728.","373,728",1,1,1.0,1.0,1.0,1.0,0.42857142857142855,1.0
+8,"Is the cash position (Cash, cash equivalents and investments) higher in Q2-2025 compared to Q2-2024?",Yes,"Metric: Cash, cash equivalents and investments. 
+Values: Q2-2024 was 33,648; Q2-2025 was 36,782. 
+Since 36,782 is greater than 33,648, the answer is yes.","Yes, the cash position is higher in Q2-2025 compared to Q2-2024.",1,1,1.0,1.0,1.0,0.75,1.0,1.0
+9,What milestone did the Energy storage deployments achieve in Q2-2025?,12th consecutive quarterly record,"Metric: Energy storage deployments. Values: Q2-2024 was 9.4; Q3-2024 was 6.9; Q4-2024 was 11.0; Q1-2025 was 10.4; Q2-2025 was 9.6. 
+
+According to the context, in Q2-2025, the Energy storage deployments achieved 9.6 GWh. However, the question asks for a ""milestone"", which is mentioned in the text as ""their 12th consecutive quarterly record"" but this is not specifically tied to Q2-2025 in the provided snippets. Since the exact milestone for Q2-2025 is not directly stated in the provided context regarding records, but we know the deployment value, the answer regarding milestones as asked is not directly answerable with the given data.",The Energy storage deployments achieved their 12th consecutive quarterly record in Q2-2025.,1,1,1.0,1.0,1.0,1.0,0.4444444444444444,1.0
+10,What is the total 'Global vehicle inventory (days of supply)' in Q2-2025?,24,"Metric: Global vehicle inventory (days of supply). Values: Q2-2024 was 18; Q3-2024 was 19; Q4-2024 was 12; Q1-2025 was 22; Q2-2025 was 24. 
+
+The total 'Global vehicle inventory (days of supply)' in Q2-2025 is 24.",The total 'Global vehicle inventory (days of supply)' in Q2-2025 is 24.,1,1,1.0,1.0,1.0,1.0,0.2857142857142857,1.0
+11,Calculate the total vehicle production for the first half of 2025 (Q1+Q2).,"772,859","Metric: Total production. 
+Values: Q1-2025 was 362,615; Q2-2025 was 410,244. 
+To find the total vehicle production for the first half of 2025, we need to add the production of Q1-2025 and Q2-2025.
+Total production for the first half of 2025 = 362,615 + 410,244 = 772,859.","The total vehicle production for the first half of 2025 is 772,859.",1,1,1.0,1.0,1.0,1.0,1.0,1.0
+12,By how much did 'Services and other revenue' grow YoY in Q2-2025 (percentage)?,17%,"Metric: Services and other revenue. Values: Q2-2024 was 2,608; Q3-2024 was 2; Q4-2024 was 2,608; Q1-2025 was 2,608; Q2-2025 was 2,608. However, the exact YoY percentage growth for Q2-2025 is not provided in the given context. 
+
+To calculate the growth, we would need the value for Q2-2024 and Q2-2025. Assuming the value for Q2-2025 is the same as the other Q2 value mentioned which is 2,608, and using the Q2-2024 value of 2,608, the growth would be 0% since both values are the same. 
+
+However, without the explicit Q2-2025 value for 'Services and other revenue', I must rely on the data given. Since the specific Q2-2025 value for 'Services and other revenue' is not provided in the context, I could not find the data for that specific period to calculate the exact YoY growth percentage.",The 'Services and other revenue' grew by 16.79% year-over-year in Q2-2025.,0,1,1.0,1.0,1.0,1.0,0.7,1.0
+13,Calculate the difference between GAAP Net Income and Non-GAAP Net Income in Q2-2025.,221,"Metric: Net income attributable to common stockholders. Values: Q2-2025 was 1,393; 
+
+Metric: Net income attributable to common stockholders (non-GAAP) is not directly available for Q2-2025 in the given context. However, we can find Net income attributable to common stockholders (GAAP) for Q2-2025 which is 1,393.
+
+Since the non-GAAP value for Q2-2025 is not provided, I could not find the data for that specific period to calculate the difference between GAAP Net Income and Non-GAAP Net Income in Q2-2025.",The difference is 221,0,1,1.0,1.0,1.0,0.6,0.8333333333333334,1.0
+14,Which city launched the first Robotaxi service?,Austin,The first Robotaxi service was launched in Austin.,Austin,1,1,1.0,1.0,1.0,1.0,1.0,1.0
+15,What is the Total GAAP gross margin difference (in bp) between Q2-2024 and Q2-2025?,-71 bp,"Metric: Total GAAP gross margin. 
+Values: Q2-2024 was 18.0%; Q2-2025 was 17.2%. 
+The difference is 0.8%. 
+To convert the difference to basis points, we multiply by 100: 0.8% * 100 = 80 basis points.
+The difference is 80 basis points, but since Q2-2025 is lower, it is a decrease, however the question only asks for the difference. 
+
+The difference is 80 basis points.",The difference in GAAP gross margin between Q2-2024 and Q2-2025 is 80 basis points.,0,0,0.0,1.0,1.0,0.8333333333333334,0.8571428571428571,1.0
