@@ -1,5 +1,10 @@
 # Commit History Rewrite Instructions
 
+> **⚠️ IMPORTANT NOTE ABOUT THIS PR**  
+> The commits in this Pull Request (which add the rewrite script) are from copilot-swe-agent[bot]. This is expected and normal!  
+> **After you merge this PR**, you will run the `rewrite_commits.sh` script which will rewrite ALL commits in the repository (including the bot's commits) to show "Hardik Jain" as the author.  
+> **Result**: After running the script, GitHub will only show YOU as the contributor. The bot will disappear from the contributors list.
+
 ## Overview
 
 This guide provides detailed instructions for rewriting the commit history of the AutoFinQA repository to ensure all commits are attributed to **Hardik Jain** (hardikjain1704@gmail.com).
@@ -15,6 +20,32 @@ The `rewrite_commits.sh` script performs the following operations:
 5. **Processes All Branches and Tags**: Applies changes across all branches and tags in the repository
 
 **Technical Note**: The script uses `git filter-branch`, which is built into all Git installations. While Git recommends the newer `git filter-repo` for large repositories, `filter-branch` is suitable for this small repository and doesn't require additional tool installation. See the "Alternative Approach" section for `git filter-repo` instructions.
+
+## Quick Start - Complete Workflow
+
+Here's the complete process from start to finish:
+
+1. **Merge this PR** into your main/master branch on GitHub
+2. **Pull the changes** to your local repository:
+   ```bash
+   git checkout main  # or master
+   git pull origin main
+   ```
+3. **Run the script** to rewrite all commit history:
+   ```bash
+   ./rewrite_commits.sh
+   # Type 'yes' when prompted
+   ```
+4. **Verify the changes**:
+   ```bash
+   git log --format='%an <%ae>' | head -10
+   # Should show "Hardik Jain <hardikjain1704@gmail.com>" for all commits
+   ```
+5. **Force push to GitHub**:
+   ```bash
+   git push --force origin main
+   ```
+6. **Check GitHub**: Visit your repository's contributors page - only "Hardik Jain" should appear!
 
 ## Prerequisites
 
