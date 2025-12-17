@@ -1,0 +1,166 @@
+name: Git History Rewrite (Manual Trigger)
+
+# WARNING: This workflow rewrites Git history!
+# Only run this workflow if you understand the implications.
+# 
+# This workflow is disabled by default and must be manually triggered.
+# It will rewrite all commits where the committer is GitHub web-flow
+# to use Hardik Jain's name and email instead.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_rewrite:
+        description: 'Type "I understand this rewrites history" to confirm'
+        required: true
+        type: string
+      force_push:
+        description: 'Force push after rewrite (true/false)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  rewrite-history:
+    runs-on: ubuntu-latest
+    
+    # Safety check - workflow can only be run manually
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Validate confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm_rewrite }}" != "I understand this rewrites history" ]; then
+            echo "❌ Confirmation text does not match. Aborting."
+            echo "You must type exactly: I understand this rewrites history"
+            exit 1
+          fi
+          echo "✅ Confirmation validated"
+
+      - name: Checkout repository with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "Hardik Jain"
+          git config user.email "hardikjain1704@gmail.com"
+
+      - name: Check for web-flow commits
+        id: check
+        run: |
+          echo "Checking for commits with noreply@github.com committer..."
+          COUNT=$(git log --all --format="%ce" | grep -c "noreply@github.com" || true)
+          echo "webflow_count=$COUNT" >> $GITHUB_OUTPUT
+          echo "Found $COUNT commits with noreply@github.com"
+          
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No web-flow commits found. Nothing to rewrite."
+            exit 0
+          fi
+          
+          echo "Sample commits that will be rewritten:"
+          git log --all --format="%h - %s (Committer: %cn <%ce>)" | grep "noreply@github.com" | head -5
+
+      - name: Create backup tag
+        if: steps.check.outputs.webflow_count > 0
+        run: |
+          BACKUP_TAG="backup-before-rewrite-$(date +%Y%m%d-%H%M%S)"
+          git tag "$BACKUP_TAG"
+          echo "Created backup tag: $BACKUP_TAG"
+          echo "BACKUP_TAG=$BACKUP_TAG" >> $GITHUB_ENV
+
+      - name: Rewrite Git history
+        if: steps.check.outputs.webflow_count > 0
+        run: |
+          echo "Starting history rewrite..."
+          
+          # Remove previous filter-branch backup if exists
+          rm -rf .git/refs/original || true
+          
+          # Perform the rewrite
+          git filter-branch --env-filter '
+          OLD_EMAIL="noreply@github.com"
+          NEW_NAME="Hardik Jain"
+          NEW_EMAIL="hardikjain1704@gmail.com"
+          
+          if [ "$GIT_COMMITTER_EMAIL" = "$OLD_EMAIL" ]; then
+              export GIT_COMMITTER_NAME="$NEW_NAME"
+              export GIT_COMMITTER_EMAIL="$NEW_EMAIL"
+          fi
+          ' --tag-name-filter cat -- --branches --tags
+          
+          echo "History rewrite completed"
+
+      - name: Verify changes
+        if: steps.check.outputs.webflow_count > 0
+        run: |
+          echo "Verifying changes..."
+          REMAINING=$(git log --all --format="%ce" | grep -c "noreply@github.com" || true)
+          
+          if [ "$REMAINING" -eq 0 ]; then
+            echo "✅ Success! No commits with noreply@github.com found."
+          else
+            echo "⚠️ Warning: Still found $REMAINING commits with noreply@github.com"
+            exit 1
+          fi
+          
+          echo ""
+          echo "Sample of rewritten commits:"
+          git log --oneline --format="%h - %s (Committer: %cn <%ce>)" -10
+
+      - name: Force push changes
+        if: |
+          steps.check.outputs.webflow_count > 0 && 
+          github.event.inputs.force_push == 'true'
+        run: |
+          echo "Force pushing rewritten history..."
+          git push --force --all
+          git push --force --tags
+          echo "✅ Force push completed"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "=========================================="
+          echo "Git History Rewrite Summary"
+          echo "=========================================="
+          echo ""
+          echo "Webflow commits found: ${{ steps.check.outputs.webflow_count }}"
+          echo "Force push enabled: ${{ github.event.inputs.force_push }}"
+          
+          if [ "${{ steps.check.outputs.webflow_count }}" -gt 0 ]; then
+            echo "Backup tag: $BACKUP_TAG"
+          fi
+          
+          echo ""
+          if [ "${{ github.event.inputs.force_push }}" == "true" ]; then
+            echo "✅ History has been rewritten and pushed to remote"
+            echo ""
+            echo "⚠️ IMPORTANT: All collaborators must now:"
+            echo "  1. Backup their local changes"
+            echo "  2. Delete their local repository"
+            echo "  3. Clone the repository fresh"
+          else
+            echo "⚠️ History was rewritten locally but NOT pushed to remote"
+            echo ""
+            echo "To push the changes, either:"
+            echo "  1. Re-run this workflow with force_push=true"
+            echo "  2. Manually run: git push --force --all && git push --force --tags"
+          fi
+          echo ""
+          echo "To rollback (if not yet pushed):"
+          echo "  git reset --hard $BACKUP_TAG"
+
+      - name: Create issue comment (if triggered from PR)
+        if: |
+          github.event_name == 'workflow_dispatch' && 
+          steps.check.outputs.webflow_count > 0
+        run: |
+          echo "Workflow completed successfully!"
+          echo "Check the Actions tab for detailed logs."
