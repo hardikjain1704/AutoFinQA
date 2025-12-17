@@ -190,16 +190,12 @@ def main():
     print()
 
     # Create the callback script content
+    # git-filter-repo expects the script to operate on global 'commit' and 'metadata' variables
     callback_script = f"""
-import sys
-
-def modify_commit(commit, metadata):
-    # Only modify committer if it matches the old email
-    if commit.committer_email == b'{OLD_COMMITTER_EMAIL}':
-        commit.committer_name = b'{NEW_COMMITTER_NAME.decode()}'
-        commit.committer_email = b'{NEW_COMMITTER_EMAIL.decode()}'
-
-modify_commit(commit, metadata)
+# Only modify committer if it matches the old email
+if commit.committer_email == b'{OLD_COMMITTER_EMAIL}':
+    commit.committer_name = b'{NEW_COMMITTER_NAME.decode()}'
+    commit.committer_email = b'{NEW_COMMITTER_EMAIL.decode()}'
 """
 
     # Write callback to temporary file
