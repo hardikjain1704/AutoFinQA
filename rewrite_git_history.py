@@ -127,8 +127,11 @@ def main():
     print_colored(f"✓ git-filter-repo version: {version}", GREEN)
     print()
 
+    # Get remote URL before running git-filter-repo (it will be removed)
+    remote_url = get_remote_url()
+    
     # Display current repository info
-    print(f"Repository: {get_remote_url()}")
+    print(f"Repository: {remote_url}")
     print(f"Current branch: {get_current_branch()}")
     print()
 
@@ -200,13 +203,14 @@ modify_commit(commit, metadata)
 """
 
     # Write callback to temporary file
-    with open('.git_filter_repo_callback.py', 'w') as f:
+    callback_file = '.git_filter_repo_callback.py'
+    with open(callback_file, 'w') as f:
         f.write(callback_script)
 
     try:
-        # Run git-filter-repo
+        # Run git-filter-repo with the callback file
         result = subprocess.run(
-            ['git', 'filter-repo', '--force', '--commit-callback', callback_script],
+            ['git', 'filter-repo', '--force', '--commit-callback', callback_file],
             capture_output=True,
             text=True
         )
@@ -218,8 +222,8 @@ modify_commit(commit, metadata)
 
     finally:
         # Clean up callback file
-        if os.path.exists('.git_filter_repo_callback.py'):
-            os.remove('.git_filter_repo_callback.py')
+        if os.path.exists(callback_file):
+            os.remove(callback_file)
 
     print()
     print_colored("History rewrite completed!", GREEN)
@@ -227,7 +231,6 @@ modify_commit(commit, metadata)
 
     # Note: After git-filter-repo, we need to re-add the remote
     print("Re-adding remote origin...")
-    remote_url = get_remote_url()
     if remote_url != "No remote configured":
         run_command(f"git remote add origin {remote_url}", capture_output=False)
         print_colored("✓ Remote origin re-added", GREEN)
