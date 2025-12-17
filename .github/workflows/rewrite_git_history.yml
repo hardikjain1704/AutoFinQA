@@ -27,6 +27,11 @@ jobs:
   rewrite-history:
     runs-on: ubuntu-latest
     
+    # Explicit permissions for GITHUB_TOKEN
+    permissions:
+      contents: write  # Required for force-push
+      actions: read
+    
     # Safety check - workflow can only be run manually
     if: github.event_name == 'workflow_dispatch'
     
