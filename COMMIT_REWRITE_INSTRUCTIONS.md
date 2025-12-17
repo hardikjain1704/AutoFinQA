@@ -28,7 +28,11 @@ Here's the complete process from start to finish:
 1. **Merge this PR** into your main/master branch on GitHub
 2. **Pull the changes** to your local repository:
    ```bash
-   git checkout main  # or master
+   # Check your default branch name first
+   git branch -a | grep HEAD
+   
+   # Then pull (replace 'main' with 'master' if needed)
+   git checkout main
    git pull origin main
    ```
 3. **Run the script** to rewrite all commit history:
@@ -43,7 +47,11 @@ Here's the complete process from start to finish:
    ```
 5. **Force push to GitHub**:
    ```bash
+   # Force push is required because we rewrote history
    git push --force origin main
+   
+   # Note: --force-with-lease is safer for normal operations, but after
+   # a complete history rewrite, plain --force is appropriate
    ```
 6. **Check GitHub**: Visit your repository's contributors page - only "Hardik Jain" should appear!
 
