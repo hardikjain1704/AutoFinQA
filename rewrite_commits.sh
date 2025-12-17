@@ -86,8 +86,9 @@ echo ""
 
 # Clean up backup refs created by filter-branch
 echo -e "${GREEN}Step 3: Cleaning up...${NC}"
-if git for-each-ref --format="%(refname)" refs/original/ | grep -q .; then
-    git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d
+REFS_TO_DELETE=$(git for-each-ref --format="%(refname)" refs/original/ 2>/dev/null || true)
+if [ -n "$REFS_TO_DELETE" ]; then
+    echo "$REFS_TO_DELETE" | xargs -n 1 git update-ref -d
     echo -e "${GREEN}✓ Cleanup complete${NC}"
 else
     echo -e "${GREEN}✓ No cleanup needed${NC}"

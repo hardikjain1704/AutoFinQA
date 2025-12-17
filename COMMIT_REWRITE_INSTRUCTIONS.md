@@ -261,13 +261,11 @@ brew install git-filter-repo
 
 ### Using Mailmap Approach
 
-Create a mailmap file that maps all old identities to the new one:
+Create a mailmap file that maps old identities to the new canonical one:
 
 ```bash
-# Create mailmap file
+# Create mailmap file mapping old identities to new canonical identity
 cat > mailmap.txt << EOF
-Hardik Jain <hardikjain1704@gmail.com>
-Hardik Jain <hardikjain1704@gmail.com> <198982749+Copilot@users.noreply.github.com>
 Hardik Jain <hardikjain1704@gmail.com> copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
 EOF
 
@@ -276,6 +274,11 @@ git filter-repo --mailmap mailmap.txt --force
 
 # Force push
 git push --force --all origin
+```
+
+**Mailmap Format**: Each line maps an old commit identity to the new canonical identity:
+```
+Canonical Name <canonical@email.com> Commit Name <commit@email.com>
 ```
 
 ### Using Callback Approach
@@ -330,6 +333,5 @@ If you encounter issues:
 
 ---
 
-**Last Updated**: December 2025  
 **Repository**: hardikjain1704/AutoFinQA  
 **Author**: Hardik Jain
