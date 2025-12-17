@@ -2,6 +2,11 @@
 
 # Script to rewrite all commit history to attribute commits to Hardik Jain
 # This script uses git filter-branch to rewrite author and committer information
+# 
+# NOTE: git filter-branch is considered deprecated but is used here because:
+# - It's available in all Git installations (no additional tools needed)
+# - It's suitable for small repositories like this one
+# - For larger repositories or repeated use, consider git filter-repo instead
 
 set -e  # Exit on any error
 
@@ -81,8 +86,12 @@ echo ""
 
 # Clean up backup refs created by filter-branch
 echo -e "${GREEN}Step 3: Cleaning up...${NC}"
-git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d
-echo -e "${GREEN}✓ Cleanup complete${NC}"
+if git for-each-ref --format="%(refname)" refs/original/ | grep -q .; then
+    git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d
+    echo -e "${GREEN}✓ Cleanup complete${NC}"
+else
+    echo -e "${GREEN}✓ No cleanup needed${NC}"
+fi
 echo ""
 
 # Display summary

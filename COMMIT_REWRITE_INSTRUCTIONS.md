@@ -14,6 +14,8 @@ The `rewrite_commits.sh` script performs the following operations:
 4. **Preserves Everything Else**: Maintains all commit dates (both author and committer dates), commit messages, and file contents
 5. **Processes All Branches and Tags**: Applies changes across all branches and tags in the repository
 
+**Technical Note**: The script uses `git filter-branch`, which is built into all Git installations. While Git recommends the newer `git filter-repo` for large repositories, `filter-branch` is suitable for this small repository and doesn't require additional tool installation. See the "Alternative Approach" section for `git filter-repo` instructions.
+
 ## Prerequisites
 
 Before running the script, ensure you have:
@@ -245,15 +247,28 @@ Since this is a solo project, the operation is safe as long as:
 
 ## Alternative Approach: Using git filter-repo
 
-If you prefer a more modern tool, you can use `git filter-repo`:
+If you prefer a more modern and faster tool, you can use `git filter-repo` (note: requires separate installation):
+
+### Installation
 
 ```bash
 # Install git filter-repo
 pip3 install git-filter-repo
 
+# Or on macOS with Homebrew
+brew install git-filter-repo
+```
+
+### Using Mailmap Approach
+
+Create a mailmap file that maps all old identities to the new one:
+
+```bash
 # Create mailmap file
 cat > mailmap.txt << EOF
 Hardik Jain <hardikjain1704@gmail.com>
+Hardik Jain <hardikjain1704@gmail.com> <198982749+Copilot@users.noreply.github.com>
+Hardik Jain <hardikjain1704@gmail.com> copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
 EOF
 
 # Run filter-repo
@@ -262,6 +277,31 @@ git filter-repo --mailmap mailmap.txt --force
 # Force push
 git push --force --all origin
 ```
+
+### Using Callback Approach
+
+Alternatively, use a Python callback for more control:
+
+```bash
+git filter-repo --commit-callback '
+  commit.author_name = b"Hardik Jain"
+  commit.author_email = b"hardikjain1704@gmail.com"
+  commit.committer_name = b"Hardik Jain"
+  commit.committer_email = b"hardikjain1704@gmail.com"
+' --force
+
+# Force push
+git push --force --all origin
+```
+
+### Why git filter-repo?
+
+- **Faster**: Significantly faster than filter-branch for large repositories
+- **Safer**: Better error handling and validation
+- **Modern**: Actively maintained and recommended by Git developers
+- **Powerful**: More flexible with callbacks and built-in operations
+
+**Trade-off**: Requires separate installation, while filter-branch is built into Git.
 
 ## Post-Rewrite Checklist
 
