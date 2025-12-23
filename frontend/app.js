@@ -2,7 +2,9 @@
 // Configuration & State Management
 // ===================================
 const CONFIG = {
-    API_BASE_URL: 'http://localhost:8000',
+    API_BASE_URL: window.location.origin.includes('localhost') 
+        ? 'http://localhost:8000' 
+        : window.location.origin + '/api',
     MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
     ALLOWED_EXTENSIONS: ['.pdf', '.csv', '.xlsx', '.xls', '.docx', '.json', '.txt'],
     TYPING_DELAY: 300,
