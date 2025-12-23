@@ -2,7 +2,7 @@ FROM node:18-slim AS frontend-builder
 
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json* ./
-RUN npm install
+RUN rm -rf node_modules package-lock.json && npm install
 COPY frontend/ ./
 RUN npm run build
 
@@ -18,8 +18,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY auto_finQA/ ./auto_finQA/
-COPY main.py .
-COPY pyproject.toml .
 COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 
 RUN echo 'server { \
