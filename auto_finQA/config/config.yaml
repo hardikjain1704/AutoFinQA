@@ -9,8 +9,12 @@ astra_db:
   collection_name: "financedata"
 
 embedding_model:
-  provider: "google"
-  model_name: "models/text-embedding-004"
+  # provider: "google"
+  # model_name: "models/text-embedding-004"
+  provider: "hf"
+  model_name: "intfloat/e5-large-v2"
+  device: "cpu" # "cuda" or "cpu" (optional)
+
 
 retriever:
   top_k: 15
