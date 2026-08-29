@@ -27,13 +27,18 @@ retriever:
 llm:
   groq:
     provider: "groq"
-    # Primary "Smart" Model (Agent & Final Answer)
-    model_name: "llama-3.3-70b-versatile"
+    # # Primary "Smart" Model (Agent & Final Answer)
+    # model_name: "llama-3.3-70b-versatile"
     
-    # Secondary "Fast" Model (Router, Grader, Rewriter)
-    # This model has much higher rate limits
-    fast_model_name: "llama-3.1-8b-instant" 
+    # # Secondary "Fast" Model (Router, Grader, Rewriter)
+    # # This model has much higher rate limits
+    # fast_model_name: "llama-3.1-8b-instant"
     
+    # Primary "Smart" Model
+    model_name: "openai/gpt-oss-120b"
+
+    # Secondary "Fast" Model
+    fast_model_name: "openai/gpt-oss-20b"
     temperature: 0
     max_output_tokens: 2048
 
